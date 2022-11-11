@@ -36,15 +36,14 @@ const ResponsiveAppBar = () => {
 
     //When user log outs they are redirected to the login page
     const logOut = () => {
-        console.log("Log out");
-        //sessionStorage.setItem('token', ''); //Clearing out the token from session storage
+        sessionStorage.setItem('token', ''); //Clearing out the token from session storage
         navigate(`/login`, { replace: true })
     };
 
-    //Checking if the user is logged in. 
-    /*if(sessionStorage.getItem('token')){
-        isLoggedIn = true
-    }*/
+    // //Checking if the user is logged in. 
+    // if(sessionStorage.getItem('token')){
+    //     isLoggedIn = true
+    // }
 
 
     return (
@@ -54,7 +53,7 @@ const ResponsiveAppBar = () => {
             {/* Name of the site and setting the first box to have flexgrow 1 so all the other components that come after it are on the right side*/}
             <Box display='flex' flexGrow='1'>
                 <Typography variant="h6" noWrap component="div" sx={{ mr: 4}}>
-                   NordicBooks
+                    STACK UNDERFLOW
                 </Typography>
             </Box>
 
@@ -70,20 +69,20 @@ const ResponsiveAppBar = () => {
                     <MenuItem component={RouterLink} to='/' color="inherit" style={{padding: '10px'}}>
                             Home
                     </MenuItem>
-                    <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}}>
-                            Allbooks
+                    <MenuItem component={RouterLink} to='/posts' color="inherit" style={{padding: '10px'}}>
+                            Posts
                     </MenuItem>
-                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
-                            Login
+                    <MenuItem component={RouterLink} to='/createpost' color="inherit" style={{padding: '10px'}}>
+                            Create a Post
                     </MenuItem>
                     <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
                             Profile
                     </MenuItem>
+                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
+                            Login
+                    </MenuItem>
                     <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
                             Register
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{padding: '10px'}}>
-                            Checkout
                     </MenuItem>
                     <Button sx={{color:"red"}} onClick={logOut}>
                         Logout
@@ -92,30 +91,27 @@ const ResponsiveAppBar = () => {
             </Box>
             {/* Creating links to pages. Are shown in the desktop mode due to md beign flex and xs none meaning on extra small screens this is hidden*/}
             <Box  sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Menu id="menu-appbar" anchorEl={anchorElNav} anchorOrigin={{vertical: 'bottom', horizontal: 'left',}} keepMounted transformOrigin={{ vertical: 'top', horizontal: 'left'}} open={Boolean(anchorElNav)} onClose={handleCloseNavMenu} sx={{ display: { xs: 'block', md: 'none' }}}>
-                    {/* Listing menu items that are same as the normal desktop navigation*/}
                     <MenuItem component={RouterLink} to='/' color="inherit" style={{padding: '10px'}}>
                             Home
                     </MenuItem>
-                    <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}}>
-                            Allbooks
+                    <MenuItem component={RouterLink} to='/posts' color="inherit" style={{padding: '10px'}}>
+                            Posts
                     </MenuItem>
-                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
-                            Login
+                    <MenuItem component={RouterLink} to='/createpost' color="inherit" style={{padding: '10px'}}>
+                            Create a Post
                     </MenuItem>
                     <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
                             Profile
                     </MenuItem>
+                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
+                            Login
+                    </MenuItem>
                     <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
                             Register
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{padding: '10px'}}>
-                            Checkout
                     </MenuItem>
                     <Button sx={{color:"red"}} onClick={logOut}>
                         Logout
                     </Button>
-                </Menu>
             </Box>
             </Toolbar>
         </Container>

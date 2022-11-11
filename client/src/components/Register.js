@@ -16,7 +16,7 @@ const Register = () => {
         setUser({...user, [event.target.id]: event.target.value})
     }
 
-    //Function for submittting the form. 
+    //Function for submittting the form.  
     //Sends the user object to server.
     const submitForm = (event) => {
         event.preventDefault()
