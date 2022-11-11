@@ -1,0 +1,21 @@
+{
+    "name": "project",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "cd server && npm start",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "install": "cd client && npm install",
+        "dev:client": "cd client && npm start",
+        "preinstall": "cd server && npm install",
+        "dev:server": "cd server && npm run dev",
+        "build": "cd client && npm run build"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "materialize-css": "^1.0.0-rc.2",
+        "@material-ui/core": "^4.12.3",
+        "@material-ui/icons": "^4.11.2"
+    }
+}
