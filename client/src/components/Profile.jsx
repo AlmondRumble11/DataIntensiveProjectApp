@@ -3,11 +3,11 @@ import React from 'react'
 
 
 
-export default function AllBooks() {
+export default function Profile() {
 
    return (
     <div>
-        <h1>All posts</h1>     
+        <h1>My profile</h1>     
     </div>
     )
     

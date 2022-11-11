@@ -7,7 +7,7 @@ export default function Home() {
 
    return (
     <div>
-        <h1>All posts</h1>     
+        <h1>Featured books</h1>     
     </div>
     )
     
