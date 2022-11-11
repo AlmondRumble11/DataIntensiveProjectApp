@@ -52,8 +52,9 @@ const Register = () => {
 
         <div>
             <form onSubmit={submitForm} onChange={whenChanging}>
-                <Input required={true} placeholder="Name" type="text" id="name"></Input><br/><br/>
-                <Input required={true} placeholder="Username" type="text" id="username"></Input><br/><br/>
+                <Input required={true} placeholder="First Name" type="text" id="firstName"></Input><br/><br/>
+                <Input required={true} placeholder="Last Name" type="text" id="lastName"></Input><br/><br/>
+                <Input required={true} placeholder="Address" type="text" id="address"></Input><br/><br/>
                 <Input required={true} placeholder="Email" type="email" id="email"></Input><br/><br/>
                 <Input required={true} placeholder="Password" type="password" id="password"></Input>
                 <Typography variant='subtitle1' color='inherit' padding={2}>
