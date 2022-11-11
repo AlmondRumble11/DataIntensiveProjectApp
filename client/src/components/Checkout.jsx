@@ -3,7 +3,7 @@ import React from 'react'
 
 
 
-export default function BookDetails() {
+export default function Checkout() {
 
    return (
     <div>
