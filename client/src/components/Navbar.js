@@ -11,7 +11,9 @@ import MenuItem from '@mui/material/MenuItem';
 import { Link as RouterLink} from 'react-router-dom';
 import { Button } from '@mui/material';
 import { useNavigate } from "react-router-dom";
-
+import SearchIcon from '@mui/icons-material/Search';
+import { styled, alpha } from '@mui/material/styles';
+import InputBase from '@mui/material/InputBase';
 
 //SOURCE FOR APP BAR: https://mui.com/components/app-bar/#basic-app-bar
 
@@ -36,15 +38,56 @@ const ResponsiveAppBar = () => {
 
     //When user log outs they are redirected to the login page
     const logOut = () => {
-        sessionStorage.setItem('token', ''); //Clearing out the token from session storage
+        console.log("Log out");
+        //sessionStorage.setItem('token', ''); //Clearing out the token from session storage
         navigate(`/login`, { replace: true })
     };
 
-    // //Checking if the user is logged in. 
-    // if(sessionStorage.getItem('token')){
-    //     isLoggedIn = true
-    // }
+    //Checking if the user is logged in. 
+    if(sessionStorage.getItem('token')){
+        isLoggedIn = true
+    }
 
+    const Search = styled('div')(({ theme }) => ({
+        position: 'relative',
+        borderRadius: theme.shape.borderRadius,
+        backgroundColor: alpha(theme.palette.common.white, 0.15),
+        '&:hover': {
+          backgroundColor: alpha(theme.palette.common.white, 0.25),
+        },
+        marginLeft: 0,
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+          marginLeft: theme.spacing(1),
+          width: 'auto',
+        },
+      }));
+      
+      const SearchIconWrapper = styled('div')(({ theme }) => ({
+        padding: theme.spacing(0, 2),
+        height: '100%',
+        position: 'absolute',
+        pointerEvents: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }));
+      const StyledInputBase = styled(InputBase)(({ theme }) => ({
+        color: 'inherit',
+        '& .MuiInputBase-input': {
+          padding: theme.spacing(1, 1, 1, 0),
+          // vertical padding + font size from searchIcon
+          paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+          transition: theme.transitions.create('width'),
+          width: '100%',
+          [theme.breakpoints.up('sm')]: {
+            width: '500px',
+            '&:focus': {
+              width:'500px',
+            },
+          },
+        },
+      }));
 
     return (
         <AppBar position="static">
@@ -56,7 +99,15 @@ const ResponsiveAppBar = () => {
                     STACK UNDERFLOW
                 </Typography>
             </Box>
-
+            <Search>
+                    <SearchIconWrapper>
+                        <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                    />
+                </Search>
                 {/* Defining the area/ box in which the links to pages are located. 'xs: flex' meaning that on xs screens the menu is shown and in others 'md: none' it is hidden*/}
             <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                 {/* The haburger menu that is displayed on mobile */}
@@ -91,27 +142,27 @@ const ResponsiveAppBar = () => {
             </Box>
             {/* Creating links to pages. Are shown in the desktop mode due to md beign flex and xs none meaning on extra small screens this is hidden*/}
             <Box  sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    <MenuItem component={RouterLink} to='/' color="inherit" style={{padding: '10px'}}>
-                            Home
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/posts' color="inherit" style={{padding: '10px'}}>
-                            Posts
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/createpost' color="inherit" style={{padding: '10px'}}>
-                            Create a Post
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
-                            Profile
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
-                            Login
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
-                            Register
-                    </MenuItem>
-                    <Button sx={{color:"red"}} onClick={logOut}>
-                        Logout
-                    </Button>
+            <MenuItem component={RouterLink} to='/' color="inherit" style={{padding: '10px'}}>
+                        Home
+                </MenuItem>
+                <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}}>
+                        Allbooks
+                </MenuItem>
+                <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
+                        Login
+                </MenuItem>
+                <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
+                        Profile
+                </MenuItem>
+                <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
+                        Register
+                </MenuItem>
+                <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{padding: '10px'}}>
+                        Checkout
+                </MenuItem>
+                <Button sx={{color:"red"}} onClick={logOut}>
+                    Logout
+                </Button>
             </Box>
             </Toolbar>
         </Container>
