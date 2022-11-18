@@ -71,5 +71,5 @@ export default function Home() {
             {!books?.length>0 && "No books."}
         </div>
     )
-    
+
 }
