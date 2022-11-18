@@ -8,6 +8,7 @@ import Stack from '@mui/material/Stack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 //Displays single book as a card
+// Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function Book({book}) {
     const card = (
         <React.Fragment>
@@ -18,8 +19,11 @@ function Book({book}) {
             <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
                 {book.AuthorId}
             </Typography>
-            <Stack direction="row" justifyContent="end">
-                <Button variant="contained" startIcon={<ShoppingCartIcon />}>{book.Price}€</Button>
+            <Stack direction="row" justifyContent="end" spacing={5}>
+                <Typography align='left' variant="body2" sx={{overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical"}}>
+                    {book.Description}
+                </Typography>
+                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<ShoppingCartIcon />}>{book.Price}€</Button>
             </Stack>
           </CardContent>   
         </React.Fragment>
