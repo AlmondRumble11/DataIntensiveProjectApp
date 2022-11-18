@@ -1,9 +1,11 @@
-var express = require('express');
-var router = express.Router();
 
-router.get('/', function(req, res, next) {
-    res.send('book api :D');
+var express = require("express");
+var router = express.Router();
+var sqlQuery = require("../database");
+
+router.get("/", async function (req, res, next) {
+  var result = await sqlQuery("select * from Book");
+  res.send(result);
 });
 
-
-module.exports = router; 
+module.exports = router;
