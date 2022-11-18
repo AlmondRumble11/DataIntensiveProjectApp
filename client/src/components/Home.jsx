@@ -57,7 +57,7 @@ export default function Home() {
     // }, [])
     // Source map reverse: https://stackoverflow.com/questions/37664041/react-given-an-array-render-the-elements-in-reverse-order-efficiently
     //if no posts, render "No posts."
-    
+
     return (
         <div>
             <h1>Featured books</h1>
