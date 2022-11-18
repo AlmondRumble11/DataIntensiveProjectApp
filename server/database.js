@@ -16,9 +16,14 @@ async function sqlQuery(query) {
     const result = await sql.query(query);
     sql.close();
 
-    return result;
+    if (result) {
+      return result.recordset;
+    }
+
+    return null;
   } catch (err) {
     console.error(err);
+    return null;
   }
 }
 
