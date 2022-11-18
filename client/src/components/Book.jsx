@@ -11,7 +11,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 function Book({book}) {
     const card = (
         <React.Fragment>
-          <CardContent>
+          <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
             <Typography align='left' variant="h4" component="div">
                 {book.Title}
             </Typography>
@@ -27,7 +27,7 @@ function Book({book}) {
     
     return (
         <div>
-            <Box sx={{ width: '60%', margin: 'auto', mb: 1.5}}>
+            <Box sx={{border: 0, width: '60%', margin: 'auto', mb: 1.5}}>
                 <Card variant="outlined">{card}</Card>
             </Box>
         </div>
