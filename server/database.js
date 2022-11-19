@@ -28,9 +28,6 @@ async function sqlQuery(query) {
 }
 
 
-//!TODO
-// Vois varmaa lisää siihe databaseen tmv sen, että ei voi
-// ku yhellä sähköpostilla rekistereöityä ja checkkaa sen, ettei oo tyhjä...?
 async function sqlInsert(query) {
 
   try {
