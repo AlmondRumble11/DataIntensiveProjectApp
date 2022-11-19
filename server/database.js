@@ -16,10 +16,39 @@ async function sqlQuery(query) {
     const result = await sql.query(query);
     sql.close();
 
-    return result;
+    if (result) {
+      return result.recordset;
+    }
+
+    return null;
   } catch (err) {
     console.error(err);
+    return null;
   }
 }
 
-module.exports = sqlQuery;
+
+//!TODO
+// Vois varmaa lisää siihe databaseen tmv sen, että ei voi
+// ku yhellä sähköpostilla rekistereöityä ja checkkaa sen, ettei oo tyhjä...?
+async function sqlInsert(query) {
+
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query(query)
+    if (result) {
+      return result.recordset;
+    }
+
+    return null;
+
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+module.exports = {
+  sqlQuery, 
+  sqlInsert
+};
