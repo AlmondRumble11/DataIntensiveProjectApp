@@ -43,7 +43,7 @@ const ResponsiveAppBar = () => {
     //When user log outs they are redirected to the login page
     const logOut = () => {
         console.log("Log out");
-        //sessionStorage.setItem('token', ''); //Clearing out the token from session storage
+        sessionStorage.setItem('token', ''); //Clearing out the token from session storage
         navigate(`/login`, { replace: true })
     };
 
