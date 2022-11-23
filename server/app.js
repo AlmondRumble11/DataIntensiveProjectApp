@@ -25,7 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/customer', customerRouter);
+app.use('/api/customer', customerRouter);
 app.use('/book', bookRouter);
 app.use('/transaction', transactionRouter);
 
