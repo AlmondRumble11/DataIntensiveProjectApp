@@ -5,18 +5,24 @@ const sqlInsert = require("../database").sqlInsert;
 const passwordValidator = require('password-validator');
 const schema = new passwordValidator();
 const IsEmail = require('isemail')
+const bcrypt = require('bcrypt');
 
-function checkResultPassword(req, res, data) {
+function checkResultLogin(req, res, data) {
 
   if (data === null) {
     return res.status(500).send("Internal error.");
   }
 
   if (!data || data.length <= 0) {
-    return res.status(404).send("Not found.");
+    return res.status(404).send("User not found.");
   }
 
-  if (req.body.password == data[0].Password) {
+  if (req.body.password == null || data[0].Password == null){
+    return res.status(500).send("Internal error.");
+  }
+
+  if (bcrypt.compareSync(req.body.password, data[0].Password)) {
+    delete data[0]['Password']
     return res.status(200).json(data);
   } else {
     return res.status(401).send("Invalid credentials.");
@@ -48,7 +54,7 @@ function checkCustomerBody(req, res){
   return 1;
 }
 
-router.get('/', async  (req, res) =>  {
+router.get('/login', async  (req, res) =>  {
 
   const query = `
   select
@@ -58,10 +64,10 @@ router.get('/', async  (req, res) =>  {
 
   const result = await sqlQuery(query);
 
-  return checkResultPassword(req, res, result);  
+  return checkResultLogin(req, res, result);  
 });
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
 
   const query = `
   select 1
@@ -71,6 +77,10 @@ router.post('/', async (req, res) => {
   if (checkCustomerBody(req, res) == 1){
     const resultQuery = await sqlQuery(query);
     if( resultQuery.length < 1){
+
+      const salt = bcrypt.genSaltSync(10);
+      const hash = bcrypt.hashSync(req.body.password, salt);
+
       const insertQuery = `
       INSERT INTO Customer ( 
         Firstname, 
@@ -83,7 +93,7 @@ router.post('/', async (req, res) => {
         '${req.body.firstName}',
         '${req.body.lastName}', 
         '${req.body.email}',
-        '${req.body.password}', 
+        '${hash}', 
         GETDATE(), 
         '${req.body.address}')`
 
