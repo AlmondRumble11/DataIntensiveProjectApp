@@ -27,4 +27,25 @@ async function sqlQuery(query) {
   }
 }
 
-module.exports = sqlQuery;
+
+async function sqlInsert(query) {
+
+  try {
+    const pool = await sql.connect(config);
+    const result = await pool.request().query(query)
+    if (result) {
+      return result.recordset;
+    }
+
+    return null;
+
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+module.exports = {
+  sqlQuery, 
+  sqlInsert
+};
