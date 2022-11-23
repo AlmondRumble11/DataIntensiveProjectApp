@@ -1,5 +1,7 @@
+import { Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import Book from './Book';
+import Box from '@mui/material/Box';
 
 
 
@@ -33,15 +35,22 @@ export default function AllBooks() {
     if (loading) {
         return (
             <div>
-                Ladataan...
+                <Typography sx={{mt: 20}} variant='h4'>
+                    Loading...
+                </Typography>
             </div>
         )
     }
 
     return (
         <div>
-            <h1>All books</h1>
-            {books.map(book => <Book key={book.Id} book={book} />)}
+        <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
+            <h1 align='left'>All books</h1>
+        </Box>
+        {books.map((book) => (
+            <Book key={book.Id} book={book} />
+        ))}
+        {!books?.length > 0 && "No books."}
         </div>
     )
 }

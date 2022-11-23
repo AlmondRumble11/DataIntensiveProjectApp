@@ -145,7 +145,7 @@ const ResponsiveAppBar = () => {
                         Home
                     </MenuItem>
                     <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}}>
-                            Allbooks
+                            All books
                     </MenuItem>
                     <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
                             Login
@@ -182,7 +182,7 @@ const ResponsiveAppBar = () => {
                         Home
                 </MenuItem>
                 <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
-                        Allbooks
+                        All books
                 </MenuItem>
                 <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
                         Login
