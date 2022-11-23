@@ -20,6 +20,17 @@ router.get("/all", async function (req, res) {
   return getResult(res, result);
 });
 
+router.get("/featured", async function (req, res) {
+  const result = await sqlQuery(`select 
+  B.Id, B.Title, B.Description, B.Price,
+  A.FirstName, A.LastName
+  from Book as B
+  inner join Author as A on B.authorId = A.Id
+  order by addedDate desc
+  `);
+  return getResult(res, result);
+});
+
 router.get("/id/:id", async function (req, res) {
   const bookId = req.params.id;
 
