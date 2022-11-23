@@ -1,7 +1,7 @@
 
 var express = require("express");
 var router = express.Router();
-var sqlQuery = require("../database");
+var { sqlQuery } = require("../database");
 
 function getResult(res, data) {
   if (data === null) {

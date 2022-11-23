@@ -4,13 +4,20 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config({ path: ".env" });
+var cors = require('cors')
 
 var customerRouter = require('./routes/customer');
 var bookRouter = require('./routes/book');
 var transactionRouter = require('./routes/transaction');
 
 var app = express();
-const port = 3000;
+const port = 3001;
+
+var corsOptions = {
+  origin: 'http://localhost:3000',
+  optionsSuccessStatus: 200,
+}
+app.use(cors(corsOptions));
 
 app.use(logger('dev'));
 app.use(express.json());
