@@ -4,8 +4,10 @@ const sqlQuery = require("../database").sqlQuery;
 const sqlInsert = require("../database").sqlInsert;
 const passwordValidator = require('password-validator');
 const schema = new passwordValidator();
-const IsEmail = require('isemail')
+const IsEmail = require('isemail');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const authenticateToken = require('../config/passport').authenticateToken;
 
 function checkResultLogin(req, res, data) {
 
@@ -21,13 +23,27 @@ function checkResultLogin(req, res, data) {
     return res.status(500).send("Internal error.");
   }
 
+  
   if (bcrypt.compareSync(req.body.password, data[0].Password)) {
-    delete data[0]['Password']
+    const token = signJwt(data);
+    delete data[0]['Password'];
+    data[0]['token'] = token;
     return res.status(200).json(data);
   } else {
     return res.status(401).send("Invalid credentials.");
   }
   
+}
+
+function signJwt(data){
+  const jwtPayload = {
+    id: data[0].Id,
+    email: data[0].Email
+  }
+  
+  const token = jwt.sign(jwtPayload, process.env.ACCESS_SECRET, {expiresIn: "1h"});
+
+  return token;
 }
 
 
@@ -108,6 +124,10 @@ router.post('/register', async (req, res) => {
       return res.status(409).send("Email is already in use.");
     }
   }  
+});
+
+router.get('/test', authenticateToken , async (req, res) => {
+  return res.status(201).send("ok");
 });
 
 
