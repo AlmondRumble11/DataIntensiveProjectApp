@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-
+import Book from './Book';
 
 
 
@@ -9,28 +9,25 @@ export default function AllBooks() {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        getBooks();
+        getAllBooks();
     }, []);
 
-    const getBooks = () => {
+    const getAllBooks = () => {
         setLoading(true);
         setError(false);
 
         fetch('http://localhost:3001/book/all', {
             mode: 'cors'
         })
-        .then(response => response.json())
-        .then(data => setBooks(data))
-        .catch(error => {
-            setError(error);
-            console.log('error loading books', error);
-        })
-        .finally(() => {
-            setLoading(false);
-        })
-
-        
-
+            .then(response => response.json())
+            .then(data => setBooks(data))
+            .catch(error => {
+                setError(error);
+                console.log('error loading books', error);
+            })
+            .finally(() => {
+                setLoading(false);
+            })
     }
 
     if (loading) {
@@ -44,8 +41,8 @@ export default function AllBooks() {
     return (
         <div>
             <h1>All books</h1>
-            {JSON.stringify(books, null, 2)}  
+            {books.map(book => <Book key={book.Id} book={book} />)}
         </div>
     )
-    
 }
+
