@@ -12,15 +12,15 @@ const authenticateToken = require('../config/passport').authenticateToken;
 function checkResultLogin(req, res, data) {
 
   if (data === null) {
-    return res.status(500).send("Internal error.");
+    return res.status(500).json({message: "Internal error."});
   }
 
   if (!data || data.length <= 0) {
-    return res.status(404).send("User not found.");
+    return res.status(404).json({message: "User not found."});
   }
 
   if (req.body.password == null || data[0].Password == null){
-    return res.status(500).send("Internal error.");
+    return res.status(500).json({message: "Password not found."});
   }
 
   
@@ -28,9 +28,10 @@ function checkResultLogin(req, res, data) {
     const token = signJwt(data);
     delete data[0]['Password'];
     data[0]['token'] = token;
-    return res.status(200).json(data);
+    const dataSent = data[0]
+    return res.status(200).json(dataSent);
   } else {
-    return res.status(401).send("Invalid credentials.");
+    return res.status(401).json({message: "Invalid credentials"});
   }
   
 }
@@ -57,20 +58,20 @@ function checkCustomerBody(req, res){
     .has().symbols()
 
   if(req.body.firstName == null || req.body.firstName === ''){
-    return res.status(422).send('No first name.');
+    return res.status(422).json({message: "No first name"});
   }else if (req.body.lastName == null || req.body.lastName === ''){
-    return res.status(422).send('No last name.');
+    return res.status(422).json({message: "No lastname"});
   }else if (req.body.address == null || req.body.address === ''){
-    return res.status(422).send('No address.');
+    return res.status(422).json({message: "No address"});
   }else if (typeof req.body.email !== 'string' || !IsEmail.validate(req.body.email)){
-    return res.status(401).send('Invalid email.');
+    return res.status(401).json({message: "Invalid email"});
   }else if (req.body.password == null || !schema.validate(req.body.password)){ //!TODO voi lisää !schema.validate(req.body.passowrd, {list: true}) ni listaa errorit
-    return res.status(401).send('Invalid password.');
+    return res.status(401).json({message: "Invalid password"});
   }
   return 1;
 }
 
-router.get('/login', async  (req, res) =>  {
+router.post('/login', async  (req, res) =>  {
 
   const query = `
   select
@@ -116,12 +117,12 @@ router.post('/register', async (req, res) => {
       const resultInsert = await sqlInsert(insertQuery);
 
       if (resultInsert === null) {
-        return res.status(500).send("Internal error.");
+        return res.status(500).json({message: "Internal error"});
       }else {
         return res.status(201).json(resultInsert);
       }
     }else {
-      return res.status(409).send("Email is already in use.");
+      return res.status(409).json({message: "Email already in use"});
     }
   }  
 });

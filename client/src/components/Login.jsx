@@ -22,24 +22,36 @@ function Login() {
     const submitForm = (event) => {
         event.preventDefault()
 
-        // sessionStorage.removeItem('token') //Removing the current token before a new one is received
-
-        // fetch('/api/user/login', {
-        //     method: 'POST',
-        //     headers: {'Content-type': 'application/json'},
-        //     body: JSON.stringify(user),
-        //     mode: 'cors'
-        // }).then(res => res.json())
-        //     .then(data =>  {
-        //         if(data.success){
-        //             sessionStorage.setItem('token', data.token)
-        //             navigate(`/`, { replace: true }) //SOURCE for redirection within the app: https://stackoverflow.com/questions/31079081/programmatically-navigate-using-react-router?noredirect=1&lq=1
-        //         }else{
-        //             setErr(data.message)
-        //         }
-        // }) 
-        console.log('Login was successful')
-        navigate(`/`, { replace: true })
+        sessionStorage.removeItem('token') //Removing the current token before a new one is received
+        //Source for fetch res https://stackoverflow.com/questions/47267221/fetch-response-json-and-response-status
+        fetch('http://localhost:3001/api/customer/login', {
+            method: 'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify(user),
+            mode: 'cors'
+        }).then(res => {
+            if(res.ok){
+                return res.json().then(data => {
+                    sessionStorage.setItem('token', data.token)
+                    navigate(`/`, { replace: true }) //SOURCE for redirection within the app: https://stackoverflow.com/questions/31079081/programmatically-navigate-using-react-router?noredirect=1&lq=1
+                }).catch(err => {
+                    return Promise.resolve({res: res});
+                })
+            }else if(res.status !== 201){
+                res.json().then(data => {
+                    setErr(data.message)
+                    console.log(data.message);
+                })
+            }
+            else{
+                return res.json().catch(err => {
+                    throw new Error(res.statusText);
+                }).then(data => {
+                    throw new Error(data.error.message);
+                })
+            }
+        })
+        
     }
 
 
