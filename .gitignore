@@ -118,3 +118,6 @@ dist
 
 #misc.
 .dir-locals.el
+
+#env files
+server/.env
