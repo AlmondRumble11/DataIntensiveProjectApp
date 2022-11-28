@@ -14,21 +14,24 @@ function UserDetails({user}) {
         <React.Fragment>
           <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
             <Typography align='left' variant="h4" component="div" sx={{ mb: 1.5 }}>
-                {user.firstname} {user.lastname}
+                {user.Firstname} {user.Lastname}
             </Typography>
             <Stack direction="row" justifyContent="space-between">
                 <Box>
                     <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Email: {user.email}
+                        Email: {user.Email}
                     </Typography>
+                    {/* <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
+                        Phone: {user.PhoneNumber}
+                    </Typography> */}
                     <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Phone: {user.phoneNumber}
+                        Address: {user.Address}
                     </Typography>
-                    <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Address: {user.address}
-                    </Typography>
-                    <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
+                    {/* <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
                         Password: *************
+                    </Typography> */}
+                    <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
+                        Registration Date: {user.CreatedDate.split('T')[0]}
                     </Typography>
                 </Box>
                 <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<EditIcon />}>Edit</Button>

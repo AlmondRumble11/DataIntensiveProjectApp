@@ -34,7 +34,7 @@ async function sqlInsert(query) {
     const pool = await sql.connect(config);
     const result = await pool.request().query(query)
     if (result) {
-      return result.recordset;
+      return result;
     }
 
     return null;

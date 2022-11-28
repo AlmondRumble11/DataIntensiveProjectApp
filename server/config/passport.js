@@ -7,12 +7,16 @@ module.exports = {
     authenticateToken: function (req, res, next) {
         const authToken = req.get('authorization').slice(7);
         if (authToken == null) {
-            return res.status(401).send('Unauthorized access.');
+            return res.status(401).send({message: 'Unauthorized access.'});
         }
-        jwt.verify(authToken, process.env.ACCESS_SECRET, (err, done) => {
+        jwt.verify(authToken, process.env.ACCESS_SECRET, (err, jwtPayload) => {
             if (err){
-                return res.status(403).send('Forbidden access');
+                return res.status(403).send({message: 'Forbidden access'});
             } else{
+                req.user = {
+                    id: jwtPayload.id,
+                    email: jwtPayload.email
+                }
                 next();
             }
             
