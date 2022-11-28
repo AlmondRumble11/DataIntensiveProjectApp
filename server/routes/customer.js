@@ -128,6 +128,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.get('/test', authenticateToken , async (req, res) => {
+  console.log(req.user)
   return res.status(201).send("ok");
 });
 

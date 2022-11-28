@@ -21,25 +21,32 @@ const Register = () => {
     const submitForm = (event) => {
         event.preventDefault()
 
-        // fetch('/api/user/register', {
-        //     method: 'POST',
-        //     headers: {'Content-type': 'application/json'},
-        //     body: JSON.stringify(user),
-        //     mode: 'cors'
-        // }).then(res => res.json()) //Waiting for the servers response
-        //     .then(data =>  {
-        //         if(data.success){ //If the registration was successfull in the server side we redirect to login page
-        //             navigate(`/login`, { replace: true }) //SOURCE for redirection within the app: https://stackoverflow.com/questions/31079081/programmatically-navigate-using-react-router?noredirect=1&lq=1
-        //         }else if(data.email){
-        //             setErr(data.email)
-        //         }else if(data.errors.length !== 0){
-        //             setErr('Email is not valid')
-        //         }else if(data.password){
-        //             setErr("Password doesn't meet the minumum requirements")
-        //         }
-        // }) 
-        console.log('Login successful!')
-        navigate(`/login`, { replace: true })  //!TODO add API check??
+        fetch('http://localhost:3001/api/customer/register', {
+            method: 'POST',
+            headers: {'Content-type': 'application/json'},
+            body: JSON.stringify(user),
+            mode: 'cors'
+        }).then(res => {
+            if(res.ok){
+                return res.json().then(data => {
+                    navigate(`/login`, { replace: true }) //SOURCE for redirection within the app: https://stackoverflow.com/questions/31079081/programmatically-navigate-using-react-router?noredirect=1&lq=1
+                }).catch(err => {
+                    return Promise.resolve({res: res});
+                })
+            }else if(res.status !== 201){
+                res.json().then(data => {
+                    setErr(data.message)
+                    console.log(data.message);
+                })
+            }
+            else{
+                return res.json().catch(err => {
+                    throw new Error(res.statusText);
+                }).then(data => {
+                    throw new Error(data.error.message);
+                })
+            }
+        })
     }
 
 

@@ -147,33 +147,33 @@ const ResponsiveAppBar = () => {
                     <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}}>
                             All books
                     </MenuItem>
-                    <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
+                    {!isLoggedIn && <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}}>
                             Login
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
+                    </MenuItem>}
+                    {isLoggedIn && <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}}>
                             Profile
-                    </MenuItem>
-                    <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
+                    </MenuItem>}
+                    {!isLoggedIn && <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}>
                             Register
-                    </MenuItem>
+                    </MenuItem>}
                     <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{padding: '10px'}}>
                             Checkout
                     </MenuItem>
                     <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("EN")}}>
-                    EN
-                </Button>
-                <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("SWE")}}>
-                    SWE
-                </Button>
-                <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("NO")}}>
-                    NO
-                </Button>
-                <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("FI")}}>
-                    FI
-                </Button>
-                <Button sx={{color:"red"}} onClick={logOut}>
-                    Logout
-                </Button>
+                        EN
+                    </Button>
+                    <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("SWE")}}>
+                        SWE
+                    </Button>
+                    <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("NO")}}>
+                        NO
+                    </Button>
+                    <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("FI")}}>
+                        FI
+                    </Button>
+                    {isLoggedIn && <Button sx={{color:"red"}} onClick={logOut}>
+                        Logout
+                    </Button>}
                 </Menu>
             </Box>
             {/* Creating links to pages. Are shown in the desktop mode due to md beign flex and xs none meaning on extra small screens this is hidden*/}
@@ -184,15 +184,15 @@ const ResponsiveAppBar = () => {
                 <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
                         All books
                 </MenuItem>
-                <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
+                {!isLoggedIn && <MenuItem component={RouterLink} to='/login' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
                         Login
-                </MenuItem>
-                <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
+                </MenuItem>}
+                {isLoggedIn && <MenuItem component={RouterLink} to='/profile' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
                         Profile
-                </MenuItem>
-                <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}  onClick={() => {handleCloseNavMenu()}}>
+                </MenuItem>}
+                {!isLoggedIn && <MenuItem component={RouterLink} to='/register' color="inherit" style={{padding: '10px'}}  onClick={() => {handleCloseNavMenu()}}>
                         Register
-                </MenuItem>
+                </MenuItem>}
                 <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{padding: '10px'}} onClick={() => {handleCloseNavMenu()}}>
                         Checkout
                 </MenuItem>
@@ -208,9 +208,9 @@ const ResponsiveAppBar = () => {
                 <Button sx={{color:"inherit"}} onClick={() => {changeLanguage("FI")}}>
                     FI
                 </Button>
-                <Button sx={{color:"red"}} onClick={logOut}>
+                {isLoggedIn && <Button sx={{color:"red"}} onClick={logOut}>
                     Logout
-                </Button>
+                </Button>}
             </Box>
             </Toolbar>
         </Container>
