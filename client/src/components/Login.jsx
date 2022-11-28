@@ -64,8 +64,8 @@ function Login() {
 
             <div>
                 <form onSubmit={submitForm} onChange={whenChanging}>
-                    <Input placeholder="email" type="email" id="email"></Input>
-                    <Input placeholder="password" type="password" id="password"></Input>
+                    <Input required placeholder="email" type="email" id="email"></Input>
+                    <Input required placeholder="password" type="password" id="password"></Input>
                     <Button  type="submit" id="submit">Login</Button>
                 </form>
             </div>

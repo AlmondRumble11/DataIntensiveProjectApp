@@ -3,8 +3,54 @@ import {useState, useEffect} from 'react'
 import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
+import { Typography } from '@mui/material';
 
 export default function Profile() {
+    const [user, setUser] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    
+
+    useEffect(() => {
+        if(sessionStorage.getItem('token')){
+            getUserProfile();
+        }
+    }, []);
+
+    const getUserProfile = () => {
+        setLoading(true);
+        setError(false);
+        var jwt = sessionStorage.getItem('token');
+        
+
+        fetch('http://localhost:3001/api/customer/profile', {
+            method: 'GET',
+            headers: {'Authorization': `Bearer ${jwt}`},
+            mode: 'cors'
+        }).then(res => {
+            if(res.ok){
+                return res.json().then(data => {
+                    setUser(data)
+                    setLoading(false);
+                }).catch(err => {
+                    return Promise.resolve({res: res});
+                })
+            }else if(res.status !== 201){
+                res.json().then(data => {
+                    setError(data.message)
+                    console.log(error);
+                })
+            }
+            else{
+                return res.json().catch(err => {
+                    throw new Error(res.statusText);
+                }).then(data => {
+                    throw new Error(data.error.message);
+                })
+            }
+        })
+    }
+
     // const [user, setUser] = useState([{
     //     "Id": null,
     //     "firstname": null,
@@ -15,15 +61,15 @@ export default function Profile() {
     //     "createdDate": null
     // }]);
 
-    const [user, setUser] = useState([{
-    "Id": 1,
-    "firstname": 'User',
-    "lastname": 'Test',
-    "phoneNumber": '+23432313212',
-    "email": 'testuser@email.com',
-    "address": "Yliopistonkatu 34, 53850 Lappeenranta",
-    "createdDate": '23-11-2022'
-    }]);
+    // const [user, setUser] = useState([{
+    // "Id": 1,
+    // "firstname": 'User',
+    // "lastname": 'Test',
+    // "phoneNumber": '+23432313212',
+    // "email": 'testuser@email.com',
+    // "address": "Yliopistonkatu 34, 53850 Lappeenranta",
+    // "createdDate": '23-11-2022'
+    // }]);
     
     //gets userid from url
     // const {userid} = useParams()
@@ -47,6 +93,16 @@ export default function Profile() {
         "Price": 50,
         }
     ]);
+
+    if (loading) {
+        return (
+            <div>
+                <Typography sx={{mt: 20}} variant='h4'>
+                    Loading...
+                </Typography>
+            </div>
+        )
+    }
 
    return (
     <div>
