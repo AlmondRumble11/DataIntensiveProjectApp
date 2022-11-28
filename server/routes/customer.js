@@ -10,20 +10,15 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = require('../config/passport').authenticateToken;
 
 function checkResultLogin(req, res, data) {
-
   if (data === null) {
     return res.status(500).json({message: "Internal error."});
   }
-
   if (!data || data.length <= 0) {
     return res.status(404).json({message: "User not found."});
   }
-
   if (req.body.password == null || data[0].Password == null){
     return res.status(500).json({message: "Password not found."});
   }
-
-  
   if (bcrypt.compareSync(req.body.password, data[0].Password)) {
     const token = signJwt(data);
     delete data[0]['Password'];
@@ -33,7 +28,6 @@ function checkResultLogin(req, res, data) {
   } else {
     return res.status(401).json({message: "Invalid credentials"});
   }
-  
 }
 
 function signJwt(data){
@@ -41,9 +35,7 @@ function signJwt(data){
     id: data[0].Id,
     email: data[0].Email
   }
-  
   const token = jwt.sign(jwtPayload, process.env.ACCESS_SECRET, {expiresIn: "1h"});
-
   return token;
 }
 
@@ -69,6 +61,18 @@ function checkCustomerBody(req, res){
     return res.status(401).json({message: "Invalid password"});
   }
   return 1;
+}
+
+function checkResultProfile(req, res, data) {
+  if (data === null) {
+    return res.status(500).send({message: "Internal error."});
+  }
+
+  if (!data || data.length <= 0) {
+    return res.status(404).send({message: "Not found."});
+  }
+
+  return res.status(200).json(data);
 }
 
 router.post('/login', async  (req, res) =>  {
@@ -130,6 +134,21 @@ router.post('/register', async (req, res) => {
 router.get('/test', authenticateToken , async (req, res) => {
   console.log(req.user)
   return res.status(201).send("ok");
+});
+
+router.get('/profile', authenticateToken , async (req, res) => {
+  
+  const query = `
+    SELECT
+    C.Id, C.Firstname, C.Lastname, C.Address, C.Email, C.CreatedDate
+    FROM Customer as C
+    WHERE C.Id = ${req.user.id}
+  `;
+
+  const data = await sqlQuery(query);
+
+
+  return checkResultProfile(req, res, data);
 });
 
 
