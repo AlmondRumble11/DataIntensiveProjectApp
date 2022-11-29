@@ -6,14 +6,20 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useShoppingCart } from '../context/shoppingCartContext';
 
 //Displays single book as a card
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function Book({ book }) {
 
-    const addBookToShoppingCart = () => {
-        console.log('book', book);
+    const context = useShoppingCart();
 
+    const addBookToShoppingCart = () => {
+        const itemAlreadyInCart = context.items.map(item => item.Id).includes(book.Id);
+        if (!itemAlreadyInCart) {
+            const newItems = context.items.concat([book]);
+            context.setItems(newItems);
+        }
     }
     const card = (
         <React.Fragment>
@@ -43,4 +49,4 @@ function Book({ book }) {
     )
 }
 
-export default Book
+export default Book;
