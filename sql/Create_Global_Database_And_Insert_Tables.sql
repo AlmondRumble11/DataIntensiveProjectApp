@@ -159,11 +159,12 @@ BEGIN
 		Id int PRIMARY KEY NOT NULL,
 		PDF varbinary(max) NULL,
 	)
+
 	END
 
 	CREATE TABLE [Order](
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		CustomerId int FOREIGN KEY REFERENCES Customer(Id),
+		CustomerId int FOREIGN KEY REFERENCES Customer(Id) ON DELETE CASCADE,
 		Total float NULL,
 		OrderDate DATE NULL,
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
@@ -171,7 +172,7 @@ BEGIN
 
 	CREATE TABLE OrderItem(
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		CustomerId int FOREIGN KEY REFERENCES Customer(Id),
+		CustomerId int FOREIGN KEY REFERENCES Customer(Id) ON DELETE CASCADE,
 		OrderId int FOREIGN KEY REFERENCES [Order](Id),
 		BookId int FOREIGN KEY REFERENCES Book(Id),
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
@@ -231,9 +232,6 @@ BEGIN
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 2, 1, 2, @countryId , 'A Clash of Kings', '1998-11-16', 19.99, GETDATE(), 'Most epic game of chairs continues in this next chapter of the epic fantasy series. How will get to sit on the Iron Throne? Noble Robb Stark from the North, iron willed Stannis Baratheon , sadistic Joffrey Baratheon (or Bran the Broken who totally has the best story...).', 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (2, 3, 2, 3, @countryId , 'Harry Potter and the Chamber of Secrets', '1998-07-02', 49.99, GETDATE(), 'Witness the adventures of Harry Potter, a second year student in the Hogrwads school of witchcraft and wizardly', 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 3, 2, 1, @countryId , 'Harry Potter and the Deathly Hallows', '2007-07-21', 9.99, GETDATE(), 'The last battle for the Hogwarts begins. Who will be victorious, plot armor powered Harry Potter or much more powerful dark wizard Voldemort', 0.24)
-
-		
-
 	END
     SET @countryId  = @countryId  + 1
 END
@@ -1115,7 +1113,6 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, Co
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
-
 
 --------------------------------
 --USE [DataIntensiveSweden]
