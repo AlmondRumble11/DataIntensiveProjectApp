@@ -3,10 +3,12 @@ import {useState} from 'react'
 import Typography from '@mui/material/Typography';
 import Input from '@mui/material/Input';
 import { Button } from "@mui/material";
+import {useTranslation} from 'react-i18next';
+import Box from '@mui/material/Box';
 
 //Login component. 
 function Login() {
-
+    const {t} = useTranslation(['i18n']);
     let navigate = useNavigate();
 
     const [user, setUser] = useState({})
@@ -57,16 +59,15 @@ function Login() {
 
     return (
         <div>
-            
-            <Typography variant='h6' color='textSecondary' component='h2' padding={2}>
-                    Please Login To Use All Of The Features
-            </Typography>
+            <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
+                <h1 align='left'>{t('Login')}</h1>
+            </Box>
 
             <div>
                 <form onSubmit={submitForm} onChange={whenChanging}>
-                    <Input required placeholder="email" type="email" id="email"></Input>
-                    <Input required placeholder="password" type="password" id="password"></Input>
-                    <Button  type="submit" id="submit">Login</Button>
+                    <Input required placeholder={t('Email')} type="email" id="email"></Input>
+                    <Input required placeholder={t('Password')} type="password" id="password"></Input>
+                    <Button  type="submit" id="submit">{t('Login')}</Button>
                 </form>
             </div>
 
