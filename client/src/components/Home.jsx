@@ -2,14 +2,14 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import Book from './Book';
 import Box from '@mui/material/Box';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 export default function Home() {
-    const {t} = useTranslation(['i18n']);
+    const { t } = useTranslation(['i18n']);
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
-    
+
     useEffect(() => {
         getFeaturedBooks();
     }, []);
@@ -42,7 +42,7 @@ export default function Home() {
             {books.map((book) => (
                 <Book key={book.Id} book={book} />
             ))}
-            {!books?.length > 0 && <body>{t('No books')}</body>}
+            {!books?.length > 0 && <div>{t('No books')}</div>}
         </div>
     )
 
