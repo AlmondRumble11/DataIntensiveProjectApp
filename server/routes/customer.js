@@ -147,8 +147,32 @@ router.get('/profile', authenticateToken , async (req, res) => {
 
   const data = await sqlQuery(query);
 
-
   return checkResultProfile(req, res, data);
+});
+
+
+router.get('/books', authenticateToken , async (req, res) => {
+ 
+  const query = `
+    select
+    O.Id as OrderId,
+    OI.Id as OrderItemId,
+    B.Id as BookId, B.Title, B.Description, B.Price, B.PublishDate,
+    A.FirstName, A.LastName,
+    G.Name as Genre,
+    L.Name as [Language]
+    from [Order] as O
+    inner join OrderItem as OI on O.Id = OI.OrderId
+    inner join Book as B on OI.BookId = B.Id
+    inner join Author as A on B.authorId = A.Id
+    inner join Language as L on B.languageId = L.Id
+    inner join Genre as G on B.genreId = G.Id
+    where O.CustomerId = ${req.user.id}
+  `;
+  
+  const result = await sqlQuery(query);
+
+  return checkResultProfile(req, res, result);
 });
 
 
