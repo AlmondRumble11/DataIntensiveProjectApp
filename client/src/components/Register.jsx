@@ -3,9 +3,11 @@ import Input from '@mui/material/Input';
 import {useState} from 'react'
 import { useNavigate } from "react-router-dom";
 import { Button } from '@mui/material';
+import Box from '@mui/material/Box';
+import {useTranslation} from 'react-i18next';
 
 const Register = () => {
-
+    const {t} = useTranslation(['i18n']);
     let navigate = useNavigate();
 
     const [user, setUser] = useState({})
@@ -52,24 +54,23 @@ const Register = () => {
 
     return (
         <div>
-            
-        <Typography variant='h6' color='inherit' padding={2}>
-            Register here!
-        </Typography>
+            <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
+                <h1 align='left'>{t('Register')}</h1>
+            </Box>
 
         <div>
             <form onSubmit={submitForm} onChange={whenChanging}>
-                <Input required={true} placeholder="First Name" type="text" id="firstName"></Input><br/><br/>
-                <Input required={true} placeholder="Last Name" type="text" id="lastName"></Input><br/><br/>
-                <Input required={true} placeholder="Address" type="text" id="address"></Input><br/><br/>
-                <Input required={true} placeholder="Email" type="email" id="email"></Input><br/><br/>
-                <Input required={true} placeholder="Password" type="password" id="password"></Input>
+                <Input required={true} placeholder={t('Firstname')} type="text" id="firstName"></Input><br/><br/>
+                <Input required={true} placeholder={t('Lastname')} type="text" id="lastName"></Input><br/><br/>
+                <Input required={true} placeholder={t('Address')} type="text" id="address"></Input><br/><br/>
+                <Input required={true} placeholder={t('Email')} type="email" id="email"></Input><br/><br/>
+                <Input required={true} placeholder={t('Password')} type="password" id="password"></Input>
                 <Typography variant='subtitle1' color='inherit' padding={2}>
-                    The password must be 10 characters long, have upper- and lowercase, a number and a symbol.
+                    {t('passwordRequirement')}
                 </Typography>
                 
                 <br/>
-                <Button variant='contained' type="submit" id="submit">Register</Button>
+                <Button variant='contained' type="submit" id="submit">{t('Register')}</Button>
             </form>
         </div>
         

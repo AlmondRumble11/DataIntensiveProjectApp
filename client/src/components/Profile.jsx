@@ -4,12 +4,13 @@ import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
 import { Typography } from '@mui/material';
+import {useTranslation} from 'react-i18next';
 
 export default function Profile() {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    
+    const {t} = useTranslation(['i18n']);
 
     useEffect(() => {
         if(sessionStorage.getItem('token')){
@@ -98,7 +99,7 @@ export default function Profile() {
         return (
             <div>
                 <Typography sx={{mt: 20}} variant='h4'>
-                    Loading...
+                    {t('Loading')}
                 </Typography>
             </div>
         )
@@ -107,20 +108,20 @@ export default function Profile() {
    return (
     <div>
         <Box sx={{border: 0, width: '60%', margin: 'auto'}}>
-                <h1 align='left'>My Profile</h1>
+                <h1 align='left'>{t('My Profile')}</h1>
         </Box>
         {[...user].map((user) => (
                 <UserDetails key={user.Id} user={user}/>
             ))}
-        {!user?.length>0 && "Error: No user details found."}
+        {!user?.length>0 && <body>{t('NoUserDetails')}</body>}
         
         <Box sx={{border: 0, width: '60%', margin: 'auto'}}>
-                <h1 align='left'>My Books</h1>
+                <h1 align='left'>{t('My Books')}</h1>
         </Box>
         {[...books].reverse().map((book) => (
                 <OwnedBook key={book.Id} book={book}/>
             ))}
-        {!books?.length>0 && "No books."}
+        {!books?.length>0 && <body>{t('No books')}</body>}
     </div>
     )
 }
