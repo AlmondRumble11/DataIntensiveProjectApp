@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import DownloadIcon from '@mui/icons-material/Download';
+import {useTranslation} from 'react-i18next';
 
 //Displays single book as a card
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function OwnedBook({book}) {
+    const {t} = useTranslation(['i18n']);
     const card = (
         <React.Fragment>
           <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
@@ -20,7 +22,7 @@ function OwnedBook({book}) {
                         {book.AuthorId}
                     </Typography>
             <Stack direction="row" justifyContent="end">
-                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<DownloadIcon />}>Download PDF</Button>
+                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<DownloadIcon />}>{t('Download PDF')}</Button>
             </Stack>
           </CardContent>   
         </React.Fragment>

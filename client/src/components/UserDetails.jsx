@@ -6,10 +6,11 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import EditIcon from '@mui/icons-material/Edit';
-
+import {useTranslation} from 'react-i18next';
 
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function UserDetails({user}) {
+    const {t} = useTranslation(['i18n']);
     const card = (
         <React.Fragment>
           <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
@@ -19,22 +20,16 @@ function UserDetails({user}) {
             <Stack direction="row" justifyContent="space-between">
                 <Box>
                     <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Email: {user.Email}
+                        {t('Email')}: {user.Email}
                     </Typography>
-                    {/* <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Phone: {user.PhoneNumber}
-                    </Typography> */}
                     <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Address: {user.Address}
+                        {t('Address')}: {user.Address}
                     </Typography>
-                    {/* <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Password: *************
-                    </Typography> */}
                     <Typography align='left' sx={{ mb: 0.5 }} color="text.secondary">
-                        Registration Date: {user.CreatedDate.split('T')[0]}
+                        {t('Registration Date')}: {user.CreatedDate.split('T')[0]}
                     </Typography>
                 </Box>
-                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<EditIcon />}>Edit</Button>
+                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<EditIcon />}>{t('Edit')}</Button>
             </Stack>
           </CardContent>   
         </React.Fragment>
