@@ -1,10 +1,13 @@
+
 import React from 'react';
 import { useShoppingCart } from '../context/shoppingCartContext';
 import { Box, Card, Typography, CardContent, Button } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 
 export default function Checkout() {
 
+    const { t } = useTranslation(['i18n']);
     const shoppingCart = useShoppingCart();
     const books = shoppingCart.items ?? [];
 
@@ -16,13 +19,14 @@ export default function Checkout() {
         <div>
 
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
-                <h1 align='left'>Checkout</h1>
+                <h1 align='left'>{t('Checkout')}</h1>
             </Box>
             {books.map((book) => (
                 <ShoppingCartItem key={book.Id} book={book} removeItem={removeItem} />
             ))}
             {!books?.length > 0 && "Nothing on cart."}
         </div>
+
     )
 
 }
