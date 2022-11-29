@@ -967,7 +967,7 @@ BEGIN
 	IF  EXISTS(
 		SELECT * FROM 
 		DataIntensiveFinland.[dbo].Customer
-		WHERE Id = 4
+		WHERE Id = @lastCustomerId
 		EXCEPT
 		SELECT * FROM 
 		DataIntensiveGlobal.[dbo].Customer
