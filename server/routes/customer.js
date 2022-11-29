@@ -40,14 +40,14 @@ function signJwt(data){
 }
 
 
-function checkCustomerBody(req, res){
+function checkCustomerBody(req, res) {
 
-  schema
-    .is().min(10)
-    .has().uppercase()
-    .has().lowercase()
-    .has().digits()
-    .has().symbols()
+    schema
+        .is().min(10)
+        .has().uppercase()
+        .has().lowercase()
+        .has().digits()
+        .has().symbols()
 
   if(req.body.firstName == null || req.body.firstName === ''){
     return res.status(422).json({message: "No first name"});
@@ -83,14 +83,14 @@ router.post('/login', async  (req, res) =>  {
   from Customer as C
   where C.Email = '${req.body.email}'`;
 
-  const result = await sqlQuery(query);
+    const result = await sqlQuery(query);
 
   return checkResultLogin(req, res, result);  
 });
 
 router.post('/register', async (req, res) => {
 
-  const query = `
+    const query = `
   select 1
   from Customer
   where Customer.Email = '${req.body.email}'`;
@@ -118,7 +118,7 @@ router.post('/register', async (req, res) => {
         GETDATE(), 
         '${req.body.address}')`
 
-      const resultInsert = await sqlInsert(insertQuery);
+            const resultInsert = await sqlInsert(insertQuery);
 
       if (resultInsert === null) {
         return res.status(500).json({message: "Internal error"});
