@@ -52,29 +52,6 @@ export default function Profile() {
         })
     }
 
-    // const [user, setUser] = useState([{
-    //     "Id": null,
-    //     "firstname": null,
-    //     "lastname": null,
-    //     "phoneNumber": null,
-    //     "email": null,
-    //     "address": null,
-    //     "createdDate": null
-    // }]);
-
-    // const [user, setUser] = useState([{
-    // "Id": 1,
-    // "firstname": 'User',
-    // "lastname": 'Test',
-    // "phoneNumber": '+23432313212',
-    // "email": 'testuser@email.com',
-    // "address": "Yliopistonkatu 34, 53850 Lappeenranta",
-    // "createdDate": '23-11-2022'
-    // }]);
-    
-    //gets userid from url
-    // const {userid} = useParams()
-
     const [books, setBooks] = useState([{
         "Id": 1,
         "AuthorId": "George R. R. Martin",
