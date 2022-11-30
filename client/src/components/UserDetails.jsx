@@ -29,7 +29,6 @@ function UserDetails({user}) {
                         {t('Registration Date')}: {user.CreatedDate.split('T')[0]}
                     </Typography>
                 </Box>
-                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<EditIcon />}>{t('Edit')}</Button>
             </Stack>
           </CardContent>   
         </React.Fragment>

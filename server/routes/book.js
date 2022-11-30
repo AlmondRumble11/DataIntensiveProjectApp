@@ -66,4 +66,33 @@ router.get("/name/:name", async function (req, res) {
   return getResult(res, result);
 });
 
+router.get("/search/:searchTerm", async function (req, res) {
+
+  const query = `
+    select
+    B.Id, B.Title, B.Description, B.Price, B.PublishDate,
+    A.FirstName, A.LastName,
+    G.Name as Genre,
+    L.Name as Language
+    from Book as B
+    inner join Author as A on B.authorId = A.Id
+    inner join Language as L on B.languageId = L.Id
+    inner join Genre as G on B.genreId = G.Id
+    where B.Title like '%${req.params.searchTerm}%' 
+    or 
+    A.FirstName like '%${req.params.searchTerm}%'
+    or
+    A.LastName like '%${req.params.searchTerm}%'
+    or
+    G.Name like '%${req.params.searchTerm}%'
+    or
+    L.Name like '%${req.params.searchTerm}%'`;
+  
+
+  const result = await sqlQuery(query);
+
+  return getResult(res, result);
+});
+
+
 module.exports = router;
