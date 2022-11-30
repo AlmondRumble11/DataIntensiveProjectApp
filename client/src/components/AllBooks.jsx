@@ -19,22 +19,14 @@ export default function AllBooks() {
 
     const keyPress = (event, value) => {
         if(event.keyCode === 13){
-            console.log('Haku oli: ' + searchTerm);
             getBooksSearch();
-            console.log(books)
         } 
     };
 
     const getBooksSearch = () => {
 
-        var searchTermObj = {
-            "searchTerm": searchTerm
-        }
-
-        fetch('http://localhost:3001/book/search', {
+        fetch(`http://localhost:3001/book/search/${searchTerm}`, {
             method: 'GET',
-            headers: {'Content-type': 'application/json'},
-            body: JSON.stringify(searchTermObj),
             mode: 'cors'
         }).then(res => {
             if (res.ok) {

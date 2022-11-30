@@ -66,7 +66,7 @@ router.get("/name/:name", async function (req, res) {
   return getResult(res, result);
 });
 
-router.get("/search", async function (req, res) {
+router.get("/search/:searchTerm", async function (req, res) {
 
   const query = `
     select
@@ -78,15 +78,15 @@ router.get("/search", async function (req, res) {
     inner join Author as A on B.authorId = A.Id
     inner join Language as L on B.languageId = L.Id
     inner join Genre as G on B.genreId = G.Id
-    where B.Title like '%${req.body.searchTerm}%' 
+    where B.Title like '%${req.params.searchTerm}%' 
     or 
-    A.FirstName like '%${req.body.searchTerm}%'
+    A.FirstName like '%${req.params.searchTerm}%'
     or
-    A.LastName like '%${req.body.searchTerm}%'
+    A.LastName like '%${req.params.searchTerm}%'
     or
-    G.Name like '%${req.body.searchTerm}%'
+    G.Name like '%${req.params.searchTerm}%'
     or
-    L.Name like '%${req.body.searchTerm}%'`;
+    L.Name like '%${req.params.searchTerm}%'`;
   
 
   const result = await sqlQuery(query);
