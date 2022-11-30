@@ -1,19 +1,19 @@
 import React from 'react'
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
 import { Typography } from '@mui/material';
-import {useTranslation} from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 export default function Profile() {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const {t} = useTranslation(['i18n']);
+    const { t } = useTranslation(['i18n']);
 
     useEffect(() => {
-        if(sessionStorage.getItem('token')){
+        if (sessionStorage.getItem('token')) {
             getUserProfile();
         }
     }, []);
@@ -22,27 +22,27 @@ export default function Profile() {
         setLoading(true);
         setError(false);
         var jwt = sessionStorage.getItem('token');
-        
+
 
         fetch('http://localhost:3001/api/customer/profile', {
             method: 'GET',
-            headers: {'Authorization': `Bearer ${jwt}`},
+            headers: { 'Authorization': `Bearer ${jwt}` },
             mode: 'cors'
         }).then(res => {
-            if(res.ok){
+            if (res.ok) {
                 return res.json().then(data => {
                     setUser(data)
                     setLoading(false);
                 }).catch(err => {
-                    return Promise.resolve({res: res});
+                    return Promise.resolve({ res: res });
                 })
-            }else if(res.status !== 201){
+            } else if (res.status !== 201) {
                 res.json().then(data => {
                     setError(data.message)
                     console.log(error);
                 })
             }
-            else{
+            else {
                 return res.json().catch(err => {
                     throw new Error(res.statusText);
                 }).then(data => {
@@ -71,7 +71,7 @@ export default function Profile() {
     // "address": "Yliopistonkatu 34, 53850 Lappeenranta",
     // "createdDate": '23-11-2022'
     // }]);
-    
+
     //gets userid from url
     // const {userid} = useParams()
 
@@ -83,8 +83,8 @@ export default function Profile() {
         "PublishDate": "01-08-1996",
         "AddedDate": "17-11-2022",
         "Price": 50,
-        },
-        {
+    },
+    {
         "Id": 2,
         "AuthorId": "George R. R. Martin",
         "Title": "A Clash of Kings",
@@ -92,36 +92,36 @@ export default function Profile() {
         "PublishDate": "16-11-1998",
         "AddedDate": "18-11-2022",
         "Price": 50,
-        }
+    }
     ]);
 
     if (loading) {
         return (
             <div>
-                <Typography sx={{mt: 20}} variant='h4'>
+                <Typography sx={{ mt: 20 }} variant='h4'>
                     {t('Loading')}
                 </Typography>
             </div>
         )
     }
 
-   return (
-    <div>
-        <Box sx={{border: 0, width: '60%', margin: 'auto'}}>
+    return (
+        <div>
+            <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>
-        </Box>
-        {[...user].map((user) => (
-                <UserDetails key={user.Id} user={user}/>
+            </Box>
+            {[...user].map((user) => (
+                <UserDetails key={user.Id} user={user} />
             ))}
-        {!user?.length>0 && <body>{t('NoUserDetails')}</body>}
-        
-        <Box sx={{border: 0, width: '60%', margin: 'auto'}}>
+            {!user?.length > 0 && <div>{t('NoUserDetails')}</div>}
+
+            <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Books')}</h1>
-        </Box>
-        {[...books].reverse().map((book) => (
-                <OwnedBook key={book.Id} book={book}/>
+            </Box>
+            {[...books].reverse().map((book) => (
+                <OwnedBook key={book.Id} book={book} />
             ))}
-        {!books?.length>0 && <body>{t('No books')}</body>}
-    </div>
+            {!books?.length > 0 && <div>{t('No books')}</div>}
+        </div>
     )
 }

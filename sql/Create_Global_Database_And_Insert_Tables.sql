@@ -27,7 +27,6 @@ BEGIN
 	
 END
 
-
 /*
 
 	* Create databases
@@ -118,7 +117,7 @@ BEGIN
 		[Password] varchar(255) NULL,
 		CreatedDate DATETIME NULL,
 		[Address] varchar(255) NULL,
-		LastUpdatedBy DATETIME NULL
+		LastUpdatedBy TIMESTAMP NULL 
 	) 
 
 	CREATE TABLE [Language](
@@ -160,11 +159,12 @@ BEGIN
 		Id int PRIMARY KEY NOT NULL,
 		PDF varbinary(max) NULL,
 	)
+
 	END
 
 	CREATE TABLE [Order](
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		CustomerId int FOREIGN KEY REFERENCES Customer(Id),
+		CustomerId int FOREIGN KEY REFERENCES Customer(Id) ON DELETE CASCADE,
 		Total float NULL,
 		OrderDate DATE NULL,
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
@@ -172,6 +172,7 @@ BEGIN
 
 	CREATE TABLE OrderItem(
 		Id int IDENTITY PRIMARY KEY NOT NULL,
+		CustomerId int FOREIGN KEY REFERENCES Customer(Id) ON DELETE CASCADE,
 		OrderId int FOREIGN KEY REFERENCES [Order](Id),
 		BookId int FOREIGN KEY REFERENCES Book(Id),
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
@@ -231,9 +232,6 @@ BEGIN
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 2, 1, 2, @countryId , 'A Clash of Kings', '1998-11-16', 19.99, GETDATE(), 'Most epic game of chairs continues in this next chapter of the epic fantasy series. How will get to sit on the Iron Throne? Noble Robb Stark from the North, iron willed Stannis Baratheon , sadistic Joffrey Baratheon (or Bran the Broken who totally has the best story...).', 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (2, 3, 2, 3, @countryId , 'Harry Potter and the Chamber of Secrets', '1998-07-02', 49.99, GETDATE(), 'Witness the adventures of Harry Potter, a second year student in the Hogrwads school of witchcraft and wizardly', 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 3, 2, 1, @countryId , 'Harry Potter and the Deathly Hallows', '2007-07-21', 9.99, GETDATE(), 'The last battle for the Hogwarts begins. Who will be victorious, plot armor powered Harry Potter or much more powerful dark wizard Voldemort', 0.24)
-
-		
-
 	END
     SET @countryId  = @countryId  + 1
 END
@@ -267,25 +265,19 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
---INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('Jon', 'Snow', 'sdfsdfsdfsdfsdfsdfsdf.sndfdfow@email.com','IKnowNothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
-----select * from DataIntensiveSweden.[dbo].Customer
-----select * from DataIntensiveFinland.[dbo].Customer
-----select * from DataIntensiveNorway.[dbo].Customer
 
---INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])   SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
-----GO
 
 --/*	
 
@@ -294,49 +286,128 @@ GO
 --	updates the customer with the same Id to DataIntensiveFinland.[dbo].Customer and DataIntensiveNorway.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_update_trigger_sweden
---GO
---CREATE OR ALTER TRIGGER  customer_update_trigger_sweden
---ON DataIntensiveSweden.[dbo].Customer
---AFTER UPDATE
---AS
---BEGIN
---	DECLARE @lastCustomerId int;
---	SET @lastCustomerId = (SELECT TOP 1 Id 
---	FROM DataIntensiveSweden.[dbo].Customer 
---	ORDER BY LastUpdatedBy ASC);
+DROP TRIGGER IF EXISTS customer_update_trigger_sweden
+GO
+CREATE OR ALTER TRIGGER  customer_update_trigger_sweden
+ON DataIntensiveSweden.[dbo].Customer
+AFTER UPDATE
+AS
+BEGIN
+	DECLARE @lastCustomerId int;
+	DECLARE @Firstname varchar(255);
+	DECLARE @Lastname varchar(255);
+	DECLARE @email varchar(255);
+	DECLARE @password varchar(255);
+	DECLARE @createdDate DATETIME;
+	DECLARE @address varchar(255);
+	DECLARE @lastUpdatedBy DATETIME;
+	
 
---	UPDATE DataIntensiveFinland.[dbo].Customer 
---	SET 
---		Firstname =Sweden.Firstname, 
---		Lastname = Sweden.Lastname, 
---		Email = Sweden.Email, 
---		[Password] = Sweden.[Password], 
---		CreatedDate = Sweden.CreatedDate, 
---		LastUpdatedBy = Sweden.LastUpdatedBy, 
---		[Address] = Sweden.[Address] 
---	FROM
---		DataIntensiveSweden.[dbo].Customer AS Sweden
---	WHERE 
---		Sweden.Id = @lastCustomerId
+	SET @lastCustomerId = (SELECT TOP 1 Id 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Firstname = (SELECT TOP 1 Firstname 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Lastname = (SELECT TOP 1 Lastname 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @email = (SELECT TOP 1 Email 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @password = (SELECT TOP 1 [Password] 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @createdDate = (SELECT TOP 1 CreatedDate 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @address = (SELECT TOP 1 [Address]
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @lastUpdatedBy = (SELECT TOP 1 LastUpdatedBy 
+	FROM DataIntensiveSweden.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveSweden.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveNorway.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+
+	WHERE 
+		DataIntensiveNorway.[dbo].Customer.Id = @lastCustomerId
+	END
 
 
---	UPDATE DataIntensiveNorway.[dbo].Customer 
---	SET 
---		Firstname = Sweden.Firstname, 
---		Lastname = Sweden.Lastname, 
---		Email = Sweden.Email, 
---		[Password] = Sweden.[Password], 
---		CreatedDate = Sweden.CreatedDate, 
---		LastUpdatedBy = Sweden.LastUpdatedBy, 
---		[Address] = Sweden.[Address] 
---	FROM
---		DataIntensiveSweden.[dbo].Customer AS Sweden
---	WHERE 
---		Sweden.Id = @lastCustomerId
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveSweden.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveFinland.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		 DataIntensiveFinland.[dbo].Customer.Id = @lastCustomerId
+	END
 
---END;	
---GO 
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveGlobal.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveSweden.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveGlobal.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
+	END
+
+END	
+GO
 
 --/*	
 
@@ -345,31 +416,39 @@ GO
 --	deletes the customer with the same Id from DataIntensiveFinland.[dbo].Customer and DataIntensiveNorway.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_delete_trigger_sweden
---GO
---CREATE OR ALTER TRIGGER customer_delete_trigger_sweden
---ON  DataIntensiveSweden.[dbo].Customer
---FOR DELETE
---AS 
---BEGIN
---	DECLARE @custId INT;
---	SELECT @custId = del.Id FROM DELETED del;
---	DELETE FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId
---	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
---END;
---GO
---DROP TRIGGER IF EXISTS customer_delete_trigger_sweden
---GO
---CREATE OR ALTER TRIGGER customer_delete_trigger_sweden
---ON  DataIntensiveSweden.[dbo].Customer
---FOR DELETE
---AS 
---BEGIN
---	DECLARE @custId INT;
---	SELECT @custId = del.Id FROM DELETED del;
---	-- TODO REMOVE CUSTOMER ORDERS
---END;
---GO
+
+DROP TRIGGER IF EXISTS customer_delete_trigger_sweden
+GO
+CREATE OR ALTER TRIGGER customer_delete_trigger_sweden
+ON  DataIntensiveSweden.[dbo].Customer
+FOR DELETE
+AS 
+BEGIN
+	DECLARE @custId INT;
+	SELECT @custId = del.Id FROM DELETED del;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveGlobal.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId
+	END
+	IF EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveFinland.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveFinland.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId
+	END;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveNorway.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveNorway.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
+	END;
+END;
+GO
+
 
 --/*******************************************************
 
@@ -399,24 +478,18 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
-
-
---INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('fghfgh', 'fghfgh', 'jon.snow@fghfgh.com','fghfgh', GETDATE(), GETDATE(), 'Castle Black, fghfgh 1') 
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
 
 --/*	
 
@@ -425,49 +498,128 @@ GO
 --	updates the customer with the same Id to DataIntensiveSweden.[dbo].Customer and DataIntensiveNorway.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_update_trigger_finland
---GO
---CREATE TRIGGER  customer_update_trigger_finland
---ON DataIntensiveFinland.[dbo].Customer
---AFTER UPDATE
---AS
---BEGIN
---	DECLARE @lastCustomerId int;
---	SET @lastCustomerId = (SELECT TOP 1 Id 
---	FROM DataIntensiveFinland.[dbo].Customer 
---	ORDER BY LastUpdatedBy DESC);
+DROP TRIGGER IF EXISTS customer_update_trigger_finland
+GO
+CREATE OR ALTER TRIGGER customer_update_trigger_finland
+ON DataIntensiveFinland.[dbo].Customer
+AFTER UPDATE
+AS
+BEGIN
+	DECLARE @lastCustomerId int;
+	DECLARE @Firstname varchar(255);
+	DECLARE @Lastname varchar(255);
+	DECLARE @email varchar(255);
+	DECLARE @password varchar(255);
+	DECLARE @createdDate DATETIME;
+	DECLARE @address varchar(255);
+	DECLARE @lastUpdatedBy DATETIME;
+	
 
---	UPDATE DataIntensiveSweden.[dbo].Customer 
---	SET 
---		Firstname = Finland.Firstname, 
---		Lastname = Finland.Lastname, 
---		Email = Finland.Email, 
---		[Password] = Finland.[Password], 
---		CreatedDate = Finland.CreatedDate, 
---		LastUpdatedBy = Finland.LastUpdatedBy, 
---		[Address] = Finland.[Address] 
---	FROM
---		DataIntensiveFinland.[dbo].Customer AS Finland
---	WHERE 
---		Finland.Id = @lastCustomerId
+	SET @lastCustomerId = (SELECT TOP 1 Id 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Firstname = (SELECT TOP 1 Firstname 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Lastname = (SELECT TOP 1 Lastname 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @email = (SELECT TOP 1 Email 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @password = (SELECT TOP 1 [Password] 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @createdDate = (SELECT TOP 1 CreatedDate 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @address = (SELECT TOP 1 [Address]
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @lastUpdatedBy = (SELECT TOP 1 LastUpdatedBy 
+	FROM DataIntensiveFinland.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveNorway.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+		--LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+
+	WHERE 
+		DataIntensiveNorway.[dbo].Customer.Id = @lastCustomerId
+	END
 
 
---	UPDATE DataIntensiveNorway.[dbo].Customer 
---	SET 
---		Firstname = Finland.Firstname, 
---		Lastname = Finland.Lastname, 
---		Email = Finland.Email, 
---		[Password] = Finland.[Password], 
---		CreatedDate = Finland.CreatedDate, 
---		LastUpdatedBy = Finland.LastUpdatedBy, 
---		[Address] = Finland.[Address] 
---	FROM
---		DataIntensiveFinland.[dbo].Customer AS Finland
---	WHERE 
---		Finland.Id = @lastCustomerId
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveSweden.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveSweden.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+		--LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
+	END
 
---END	
---GO
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveGlobal.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveGlobal.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
+	END
+
+END	
+GO
 
 --/*	
 
@@ -476,32 +628,38 @@ GO
 --	deletes the customer with the same Id from DataIntensiveSweden.[dbo].Customer and DataIntensiveNorway.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_delete_trigger_finland
---GO
---CREATE OR ALTER TRIGGER customer_delete_trigger_finland
---ON  DataIntensiveFinland.[dbo].Customer
---FOR DELETE
---AS 
---BEGIN
---	DECLARE @custId INT;
---	SELECT @custId = del.Id FROM DELETED del;
---	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
---	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
---END;
---GO
---DROP TRIGGER IF EXISTS customer_delete_trigger_finland
---GO
---CREATE OR ALTER TRIGGER customer_delete_trigger_finland
---ON  DataIntensiveFinland.[dbo].Customer
---FOR DELETE
---AS 
---BEGIN
---	DECLARE @custId INT;
---	SELECT @custId = del.Id FROM DELETED del;
---	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
---	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
---END;
---GO
+
+DROP TRIGGER IF EXISTS customer_delete_trigger_finland
+GO
+CREATE OR ALTER TRIGGER customer_delete_trigger_finland
+ON  DataIntensiveFinland.[dbo].Customer
+FOR DELETE
+AS 
+BEGIN
+	DECLARE @custId INT;
+	SELECT @custId = del.Id FROM DELETED del;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveSweden.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveSweden.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
+	END
+	IF EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveNorway.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveNorway.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
+	END;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveGlobal.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId
+	END;
+END;
+GO
 
 
 --/******************************************************
@@ -521,7 +679,7 @@ GO
 --*/
 DROP TRIGGER IF EXISTS customer_insert_trigger_norway
 GO
-CREATE TRIGGER customer_insert_trigger_norway
+CREATE OR ALTER TRIGGER customer_insert_trigger_norway
 ON DataIntensiveNorway.[dbo].Customer
 AFTER INSERT
 AS
@@ -531,15 +689,15 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 		IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
@@ -552,49 +710,128 @@ GO
 --	updates the customer with the same Id to DataIntensiveSweden.[dbo].Customer and DataIntensiveFinland.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_update_trigger_norway
---GO
---CREATE TRIGGER customer_update_trigger_norway
---ON DataIntensiveNorway.[dbo].Customer
---AFTER UPDATE
---AS
---BEGIN
---	DECLARE @lastCustomerId int;
---	SET @lastCustomerId = (SELECT TOP 1 Id 
---	FROM DataIntensiveNorway.[dbo].Customer 
---	ORDER BY LastUpdatedBy DESC);
+DROP TRIGGER IF EXISTS customer_update_trigger_norway
+GO
+CREATE OR ALTER TRIGGER customer_update_trigger_norway
+ON DataIntensiveNorway.[dbo].Customer
+AFTER UPDATE
+AS
+BEGIN
+	DECLARE @lastCustomerId int;
+	DECLARE @Firstname varchar(255);
+	DECLARE @Lastname varchar(255);
+	DECLARE @email varchar(255);
+	DECLARE @password varchar(255);
+	DECLARE @createdDate DATETIME;
+	DECLARE @address varchar(255);
+	DECLARE @lastUpdatedBy DATETIME;
+	
 
---	UPDATE DataIntensiveFinland.[dbo].Customer 
---	SET 
---		Firstname = Norway.Firstname, 
---		Lastname = Norway.Lastname, 
---		Email = Norway.Email, 
---		[Password] = Norway.[Password], 
---		CreatedDate = Norway.CreatedDate, 
---		LastUpdatedBy = Norway.LastUpdatedBy, 
---		[Address] = Norway.[Address] 
---	FROM
---		DataIntensiveNorway.[dbo].Customer AS Norway
---	WHERE 
---		Norway.Id = @lastCustomerId
+	SET @lastCustomerId = (SELECT TOP 1 Id 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Firstname = (SELECT TOP 1 Firstname 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @Lastname = (SELECT TOP 1 Lastname 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @email = (SELECT TOP 1 Email 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @password = (SELECT TOP 1 [Password] 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @createdDate = (SELECT TOP 1 CreatedDate 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @address = (SELECT TOP 1 [Address]
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	SET @lastUpdatedBy = (SELECT TOP 1 LastUpdatedBy 
+	FROM DataIntensiveNorway.[dbo].Customer 
+	ORDER BY LastUpdatedBy DESC);
+
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveFinland.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+
+	WHERE 
+		DataIntensiveFinland.[dbo].Customer.Id = @lastCustomerId
+	END
 
 
---	UPDATE DataIntensiveSweden.[dbo].Customer 
---	SET 
---		Firstname = Norway.Firstname, 
---		Lastname = Norway.Lastname, 
---		Email = Norway.Email, 
---		[Password] = Norway.[Password], 
---		CreatedDate = Norway.CreatedDate, 
---		LastUpdatedBy = Norway.LastUpdatedBy, 
---		[Address] = Norway.[Address] 
---	FROM
---		DataIntensiveNorway.[dbo].Customer AS Norway
---	WHERE 
---		Norway.Id = @lastCustomerId
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveSweden.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveSweden.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
+	END
 
---END	
---GO
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		
+	)
+	BEGIN
+	UPDATE DataIntensiveGlobal.[dbo].Customer 
+	SET 
+		Firstname = @Firstname, 
+		Lastname = @Lastname, 
+		Email = @email, 
+		[Password] = @password, 
+		CreatedDate = @createdDate, 
+		--LastUpdatedBy = @lastUpdatedBy, 
+		[Address] = @address 
+	WHERE 
+		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
+	END
+
+END	
+GO
 
 --/*	
 
@@ -603,19 +840,37 @@ GO
 --	deletes the customer with the same Id from DataIntensiveSweden.[dbo].Customer and DataIntensiveFinland.[dbo].Customer tables
 
 --*/
---DROP TRIGGER IF EXISTS customer_delete_trigger_norway
---GO
---CREATE OR ALTER TRIGGER customer_delete_trigger_nowway
---ON  DataIntensiveNorway.[dbo].Customer
---FOR DELETE
---AS 
---BEGIN
---	DECLARE @custId INT;
---	SELECT @custId = del.Id FROM DELETED del;
---	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
---	DELETE FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId
---END;
---GO
+DROP TRIGGER IF EXISTS customer_delete_trigger_norway
+GO
+CREATE OR ALTER TRIGGER customer_delete_trigger_nowway
+ON  DataIntensiveNorway.[dbo].Customer
+FOR DELETE
+AS 
+BEGIN
+	DECLARE @custId INT;
+	SELECT @custId = del.Id FROM DELETED del;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveSweden.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveSweden.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
+	END
+	IF EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveFinland.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveFinland.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId
+	END;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveGlobal.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].[Order] WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @custId
+	END;
+END;
+GO
 
 /*****************************************************
 
@@ -634,17 +889,17 @@ BEGIN
 	DECLARE @customerId int; 
 	SET @customerId = (SELECT TOP 1 Id FROM DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC);
 	
-	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
+	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN	
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])   SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROM DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])   SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
-	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
+	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	RETURN
 END	
@@ -664,6 +919,7 @@ ON DataIntensiveGlobal.[dbo].Customer
 AFTER UPDATE
 AS
 BEGIN
+	
 	DECLARE @lastCustomerId int;
 	DECLARE @Firstname varchar(255);
 	DECLARE @Lastname varchar(255);
@@ -706,6 +962,16 @@ BEGIN
 	FROM DataIntensiveGlobal.[dbo].Customer 
 	ORDER BY LastUpdatedBy DESC);
 
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveFinland.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveGlobal.[dbo].Customer
+		
+	)
+	BEGIN
 	UPDATE DataIntensiveFinland.[dbo].Customer 
 	SET 
 		Firstname = @Firstname, 
@@ -713,12 +979,16 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		LastUpdatedBy = @lastUpdatedBy, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 
 	WHERE 
 		DataIntensiveFinland.[dbo].Customer.Id = @lastCustomerId
+	END
 
+
+	IF EXISTS(SELECT * FROM DataIntensiveSweden.[dbo].Customer WHERE Id = 4 EXCEPT SELECT * FROM DataIntensiveGlobal.[dbo].Customer	)
+	BEGIN
 
 	UPDATE DataIntensiveSweden.[dbo].Customer 
 	SET 
@@ -727,11 +997,22 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		LastUpdatedBy = @lastUpdatedBy, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
+	END
 
+	IF  EXISTS(
+		SELECT * FROM 
+		DataIntensiveNorway.[dbo].Customer
+		WHERE Id = @lastCustomerId
+		EXCEPT
+		SELECT * FROM 
+		DataIntensiveGlobal.[dbo].Customer
+		
+	)
+	BEGIN
 	UPDATE DataIntensiveNorway.[dbo].Customer 
 	SET 
 		Firstname = @Firstname, 
@@ -739,11 +1020,11 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		LastUpdatedBy = @lastUpdatedBy, 
+	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		DataIntensiveNorway.[dbo].Customer.Id = @lastCustomerId
-	
+	END
 
 
 END	
@@ -765,9 +1046,26 @@ AS
 BEGIN
 	DECLARE @custId INT;
 	SELECT @custId = del.Id FROM DELETED del;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveSweden.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveSweden.[dbo].[Order] WHERE CustomerId = @custId
 	DELETE FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @custId
+	END
+	IF EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveFinland.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveFinland.[dbo].[Order] WHERE CustomerId = @custId
 	DELETE FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @custId
+	END;
+
+	IF EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId)
+	BEGIN
+	DELETE FROM DataIntensiveNorway.[dbo].OrderItem WHERE CustomerId = @custId
+	DELETE FROM DataIntensiveNorway.[dbo].[Order] WHERE CustomerId = @custId
 	DELETE FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @custId
+	END;
 END;
 GO
 
@@ -778,44 +1076,43 @@ GO
 	* Insert rest of the values to every table
 
 */
-INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('Frodo', 'Baggins', 'dsfsdffsdfsdf.baggins@email.com','OneRing1234', GETDATE(), GETDATE(), 'Bagshot Row, Bag End') 
-INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('Harry', 'Potter', 'harry.potter@email.com','TheOneWhoLived', GETDATE(), GETDATE(), '4 Privet Drive, Surrey') 
-INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('Jon', 'Snow', 'jon.snow@email.com','IKnowNothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
+INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Frodo', 'Baggins', 'dsfsdffsdfsdf.baggins@email.com','OneRing1234', GETDATE(),  'Bagshot Row, Bag End') 
+INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Harry', 'Potter', 'harry.potter@email.com','TheOneWhoLived', GETDATE(),  '4 Privet Drive, Surrey') 
+INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Jon', 'Snow', 'jon.snow@email.com','IKnowNothing', GETDATE(),  'Castle Black, Room 1') 
 
 
 DECLARE @countryId INT 
 SET @countryId = 1
 INSERT INTO DataIntensiveFinland.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveFinland.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 1, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 2, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 3, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 4, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 1, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 5, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
 
 
 SET @countryId = @countryId  + 1
 INSERT INTO DataIntensiveSweden.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveSweden.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 1, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 2, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 3, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 4, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 1, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 5, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
 
 
 SET @countryId  = @countryId  + 1
 INSERT INTO DataIntensiveNorway.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 1, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 2, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 3, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (1, 4, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 1, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VALUES (2, 5, @countryId )
-
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
 
 --------------------------------
 --USE [DataIntensiveSweden]
@@ -853,18 +1150,20 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, BookId, CountryId) VAL
 --select * from DataIntensiveFinland.[dbo].Customer
 --select * from DataIntensiveNorway.[dbo].Customer
 
---DELETE FROM DataIntensiveGlobal.[dbo].Customer where Id = 3
-----select * from DataIntensiveSweden.[dbo].Customer
-----select * from DataIntensiveFinland.[dbo].Customer
-----select * from DataIntensiveNorway.[dbo].Customer
+--DELETE FROM DataIntensiveGlobal.[dbo].Customer where Id = 1
+--select * from DataIntensiveSweden.[dbo].Customer
+--select * from DataIntensiveFinland.[dbo].Customer
+--select * from DataIntensiveNorway.[dbo].Customer
+--select * from DataIntensiveNorway.[dbo].[Order]
+--select * from DataIntensiveNorway.[dbo].OrderItem
 
 
 
---UPDATE  DataIntensiveGlobal.[dbo].Customer SET Firstname = 'TESTI', Password = 'NOPE' WHERE Id = 2
-select * from DataIntensiveSweden.[dbo].Customer
-select * from DataIntensiveFinland.[dbo].Customer
-select * from DataIntensiveNorway.[dbo].Customer
-select * from DataIntensiveGlobal.[dbo].Customer
+--UPDATE  DataIntensiveSweden.[dbo].Customer SET Firstname = 'asdfasdf', Password = 'asdfasdfasdfasdf' WHERE Id = 1
+--select * from DataIntensiveSweden.[dbo].Customer
+--select * from DataIntensiveFinland.[dbo].Customer
+--select * from DataIntensiveNorway.[dbo].Customer
+--select * from DataIntensiveGlobal.[dbo].Customer
 
 
-INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
+--INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
