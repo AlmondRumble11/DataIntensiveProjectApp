@@ -34,7 +34,7 @@ function Book({ book }) {
                     <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
                         {book.Description}
                     </Typography>
-                    <Button  sx={{ maxWidth: '80px', maxHeight: '40px', minWidth: '80px', minHeight: '40px'}}  size="medium" variant="contained" startIcon={<ShoppingCartIcon />} onClick={() => addBookToShoppingCart()}>{book.Price}€</Button>
+                    <Button  sx={{ maxWidth: '110px', maxHeight: '40px', minWidth: '110px', minHeight: '40px'}}  size="medium" variant="contained" startIcon={<ShoppingCartIcon />} onClick={() => addBookToShoppingCart()}>{book.Price}€</Button>
                 </Stack>
             </CardContent>
         </React.Fragment>
