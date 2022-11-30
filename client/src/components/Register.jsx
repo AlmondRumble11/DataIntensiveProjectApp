@@ -65,7 +65,7 @@ const Register = () => {
                 <Input required={true} placeholder={t('Address')} type="text" id="address"></Input><br/><br/>
                 <Input required={true} placeholder={t('Email')} type="email" id="email"></Input><br/><br/>
                 <Input required={true} placeholder={t('Password')} type="password" id="password"></Input>
-                <Typography variant='subtitle1' color='inherit' padding={2}>
+                <Typography sx={{mt: 5}} variant='subtitle1' color='inherit'>
                     {t('passwordRequirement')}
                 </Typography>
                 

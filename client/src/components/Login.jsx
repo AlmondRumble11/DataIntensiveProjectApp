@@ -65,9 +65,9 @@ function Login() {
 
             <div>
                 <form onSubmit={submitForm} onChange={whenChanging}>
-                    <Input required placeholder={t('Email')} type="email" id="email"></Input>
-                    <Input required placeholder={t('Password')} type="password" id="password"></Input>
-                    <Button  type="submit" id="submit">{t('Login')}</Button>
+                    <Input required placeholder={t('Email')} type="email" id="email"></Input><br/><br/>
+                    <Input required placeholder={t('Password')} type="password" id="password"></Input><br/><br/>
+                    <Button variant='contained' type="submit" id="submit">{t('Login')}</Button>
                 </form>
             </div>
 

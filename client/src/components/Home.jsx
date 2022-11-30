@@ -32,8 +32,6 @@ export default function Home() {
             })
     }
 
-
-
     return (
         <div>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
