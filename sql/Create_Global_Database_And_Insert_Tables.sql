@@ -180,6 +180,7 @@ BEGIN
 	GRANT SELECT ON "dbo"."Language" TO AdminUser
 	GRANT SELECT ON "dbo"."Genre" TO AdminUser
 	GRANT SELECT ON "dbo"."Book" TO AdminUser
+	GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
 	GRANT SELECT ON "dbo"."Order" TO AdminUser
 	GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
 
