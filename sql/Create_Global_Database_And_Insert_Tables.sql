@@ -180,6 +180,7 @@ BEGIN
 	GRANT SELECT ON "dbo"."Language" TO AdminUser
 	GRANT SELECT ON "dbo"."Genre" TO AdminUser
 	GRANT SELECT ON "dbo"."Book" TO AdminUser
+	GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
 	GRANT SELECT ON "dbo"."Order" TO AdminUser
 	GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
 
@@ -221,11 +222,11 @@ BEGIN
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('G.R.R', 'Martin', @countryId )
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('J.K', 'Rowling', @countryId )
 
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
 
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (1, 1, 1, 1, @countryId , 'The Lord of the Rings', '1954-07-29', 59.99, GETDATE(), 'The Lord of the Rings is the saga of a group of sometimes reluctant heroes who set forth to save their world from consummate evil.', 1, 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (2, 2, 1, 1, @countryId , 'A Game of Thrones', '1996-08-01', 29.99, GETDATE(), 'Several noble houses of continent called Westeros fight a civil war over who should be king, while an exiled princess across the Narrow tries to find her place in the world, and the kingdom is threatened by some rising supernatural threat from the north.', 2, 0.24)
@@ -1168,4 +1169,9 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, Co
 
 --INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
 --select * from DataIntensiveFinland.[dbo].Book inner join DataIntensiveFinland.[dbo].BookDetail  on DataIntensiveFinland.[dbo].BookDetail.Id = DataIntensiveFinland.[dbo].Book.BookDetailId
---select * from DataIntensiveFinland.[dbo].BookDetail 
+select * from DataIntensiveFinland.[dbo].BookDetail 
+
+SELECT
+    [Filename], [Path]
+    FROM DataIntensiveFinland.[dbo].BookDetail
+    WHERE Id = 1
