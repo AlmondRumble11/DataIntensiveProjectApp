@@ -19,7 +19,10 @@ export default function AllBooks() {
 
     const keyPress = (event, value) => {
         if(event.keyCode === 13){
-            getBooksSearch();
+            if(searchTerm !== ''){
+                getBooksSearch();
+            }
+            
         } 
     };
 
