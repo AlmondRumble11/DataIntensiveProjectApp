@@ -185,7 +185,7 @@ const ResponsiveAppBar = () => {
                                         </Button>
                                     );
                                 })
-                            }
+                            } 
                             {isLoggedIn && <Button sx={{ color: "red" }} onClick={logOut}>
                                 {t('Logout')}
                             </Button>}
