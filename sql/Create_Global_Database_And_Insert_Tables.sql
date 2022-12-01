@@ -33,7 +33,7 @@ END
 	* Create new user for the server that can be used to access the databases
 	
 */
-BEGIN
+
 	CREATE DATABASE DataIntensiveGlobal
 	CREATE DATABASE DataIntensiveFinland
 	CREATE DATABASE DataIntensiveSweden
@@ -45,7 +45,7 @@ BEGIN
 	CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
 	CREATE USER AdminUser FOR LOGIN AdminUser;  
 	GRANT CONNECT TO AdminUser
-END
+
 
 /*
 
@@ -54,10 +54,10 @@ END
 
 */
 
-DECLARE @pdf VARBINARY(MAX)
-SELECT @pdf = BulkColumn
-FROM OPENROWSET(BULK N'C:\DataIntensive\DataIntensiveProjectApp\MockFiles\mock.pdf', SINGLE_BLOB) AS Document;
-SELECT @pdf, DATALENGTH(@pdf)
+--DECLARE @pdf VARBINARY(MAX)
+--SELECT @pdf = BulkColumn
+--FROM OPENROWSET(BULK N'C:\DataIntensive\DataIntensiveProjectApp\MockFiles\mock.pdf', SINGLE_BLOB) AS Document;
+--SELECT @pdf, DATALENGTH(@pdf)
 DECLARE @countryId INT 
 SET @countryId=0
 
@@ -132,9 +132,14 @@ BEGIN
 		CountryId int FOREIGN KEY REFERENCES Country(Id),
 	)
 
-	-- Book table for Norway, Finland and Sweden
-	IF(@countryId > 0)
-	BEGIN
+	CREATE TABLE BookDetail(
+		Id int IDENTITY PRIMARY KEY NOT NULL,
+		[Path] varchar(2000),
+		[Filename] varchar(2000),
+		DateAdded Date,
+		ContentType varchar(10)
+	)
+
 	CREATE TABLE Book(
 		Id int IDENTITY PRIMARY KEY NOT NULL,
 		PublisherId int FOREIGN KEY REFERENCES Publisher(Id),
@@ -147,20 +152,9 @@ BEGIN
 		AddedDate DATE NULL,
 		Price float NULL,
 		[Description] varchar(2000) NULL,
-		PDF int NULL,
+		BookDetailId int FOREIGN KEY REFERENCES BookDetail(Id) ON DELETE CASCADE,
 		CountrySpecificInfo varchar(max) NULL
 	)
-	END
-
-	-- Book table for the Global database --> PDFs of the books are here
-	IF(@countryId = 0)
-	BEGIN
-	CREATE TABLE Book(
-		Id int PRIMARY KEY NOT NULL,
-		PDF varbinary(max) NULL,
-	)
-
-	END
 
 	CREATE TABLE [Order](
 		Id int IDENTITY PRIMARY KEY NOT NULL,
@@ -227,11 +221,17 @@ BEGIN
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('G.R.R', 'Martin', @countryId )
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('J.K', 'Rowling', @countryId )
 
-		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 1, 1, 1, @countryId , 'The Lord of the Rings', '1954-07-29', 59.99, GETDATE(), 'The Lord of the Rings is the saga of a group of sometimes reluctant heroes who set forth to save their world from consummate evil.', 0.24)
-		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (2, 2, 1, 1, @countryId , 'A Game of Thrones', '1996-08-01', 29.99, GETDATE(), 'Several noble houses of continent called Westeros fight a civil war over who should be king, while an exiled princess across the Narrow tries to find her place in the world, and the kingdom is threatened by some rising supernatural threat from the north.', 0.24)
-		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 2, 1, 2, @countryId , 'A Clash of Kings', '1998-11-16', 19.99, GETDATE(), 'Most epic game of chairs continues in this next chapter of the epic fantasy series. How will get to sit on the Iron Throne? Noble Robb Stark from the North, iron willed Stannis Baratheon , sadistic Joffrey Baratheon (or Bran the Broken who totally has the best story...).', 0.24)
-		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (2, 3, 2, 3, @countryId , 'Harry Potter and the Chamber of Secrets', '1998-07-02', 49.99, GETDATE(), 'Witness the adventures of Harry Potter, a second year student in the Hogrwads school of witchcraft and wizardly', 0.24)
-		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], CountrySpecificInfo) VALUES (1, 3, 2, 1, @countryId , 'Harry Potter and the Deathly Hallows', '2007-07-21', 9.99, GETDATE(), 'The last battle for the Hogwarts begins. Who will be victorious, plot armor powered Harry Potter or much more powerful dark wizard Voldemort', 0.24)
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./server/book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+
+		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (1, 1, 1, 1, @countryId , 'The Lord of the Rings', '1954-07-29', 59.99, GETDATE(), 'The Lord of the Rings is the saga of a group of sometimes reluctant heroes who set forth to save their world from consummate evil.', 1, 0.24)
+		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (2, 2, 1, 1, @countryId , 'A Game of Thrones', '1996-08-01', 29.99, GETDATE(), 'Several noble houses of continent called Westeros fight a civil war over who should be king, while an exiled princess across the Narrow tries to find her place in the world, and the kingdom is threatened by some rising supernatural threat from the north.', 2, 0.24)
+		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (1, 2, 1, 2, @countryId , 'A Clash of Kings', '1998-11-16', 19.99, GETDATE(), 'Most epic game of chairs continues in this next chapter of the epic fantasy series. How will get to sit on the Iron Throne? Noble Robb Stark from the North, iron willed Stannis Baratheon , sadistic Joffrey Baratheon (or Bran the Broken who totally has the best story...).', 3, 0.24)
+		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (2, 3, 2, 3, @countryId , 'Harry Potter and the Chamber of Secrets', '1998-07-02', 49.99, GETDATE(), 'Witness the adventures of Harry Potter, a second year student in the Hogrwads school of witchcraft and wizardly', 4, 0.24)
+		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (1, 3, 2, 1, @countryId , 'Harry Potter and the Deathly Hallows', '2007-07-21', 9.99, GETDATE(), 'The last battle for the Hogwarts begins. Who will be victorious, plot armor powered Harry Potter or much more powerful dark wizard Voldemort', 5, 0.24)
 	END
     SET @countryId  = @countryId  + 1
 END
@@ -1167,3 +1167,5 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, Co
 
 
 --INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
+--select * from DataIntensiveFinland.[dbo].Book inner join DataIntensiveFinland.[dbo].BookDetail  on DataIntensiveFinland.[dbo].BookDetail.Id = DataIntensiveFinland.[dbo].Book.BookDetailId
+--select * from DataIntensiveFinland.[dbo].BookDetail 
