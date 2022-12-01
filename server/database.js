@@ -12,7 +12,6 @@ const config = {
 
 async function sqlQuery(query) {
     try {
-        console.log(config);
         await sql.connect(config);
         const result = await sql.query(query);
         sql.close();
