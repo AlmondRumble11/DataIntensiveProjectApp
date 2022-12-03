@@ -7,6 +7,7 @@ import Register from './components/Register';
 import AllBooks from './components/AllBooks';
 import BookDetails from './components/BookDetails';
 import Checkout from './components/Checkout';
+import { SelectLocation } from './components/SelectLocation';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ShoppingCartProvider } from './context/shoppingCartContext';
 import { LanguageContextProvider } from './context/languageContext';
@@ -28,6 +29,7 @@ function App() {
                 <Route path='/login' element={<Login />}></Route>
                 <Route path='/register' element={<Register />}></Route>
                 <Route path='/checkout' element={<Checkout />}></Route>
+                <Route path='/location' element={<SelectLocation />}></Route>
               </Routes>
             </LanguageContextProvider>
           </ShoppingCartProvider>
