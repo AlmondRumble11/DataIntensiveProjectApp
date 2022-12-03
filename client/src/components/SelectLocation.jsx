@@ -32,7 +32,7 @@ export const SelectLocation = () => {
 
 			// * The api key must be set to the env variables before running react
 			const locationApiUrl = `
-			https://api.bigdatacloud.net/data/reverse-geocode?latitude=${ltd}&longitude=${lng}&key=${process.env.REACT_APP_API_KEY}
+			https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${ltd}&longitude=${lng}
 			`
 			fetch(locationApiUrl)
 			.then(res => res.json())
