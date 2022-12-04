@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 require('dotenv').config({ path: ".env" });
 var cors = require('cors')
+const fileupload = require('express-fileupload');
 
 var customerRouter = require('./routes/customer');
 var bookRouter = require('./routes/book');
@@ -14,11 +15,11 @@ var app = express();
 const port = 3001;
 
 var corsOptions = {
-  origin: 'http://localhost:3000',
-  optionsSuccessStatus: 200,
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200,
 }
 app.use(cors(corsOptions));
-
+app.use(fileupload());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -30,7 +31,7 @@ app.use('/book', bookRouter);
 app.use('/transaction', transactionRouter);
 
 app.listen(port, () => {
-  console.log(`Server listening on port ${port}`)
+    console.log(`Server listening on port ${port}`)
 });
 
 module.exports = app;

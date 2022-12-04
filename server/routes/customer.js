@@ -101,7 +101,6 @@ router.post('/register', async(req, res) => {
 
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(req.body.password, salt);
-
             const insertQuery = `
       INSERT INTO Customer ( 
         Firstname, 
@@ -140,13 +139,13 @@ router.get('/profile', authenticateToken, async(req, res) => {
 
     const query = `
     SELECT
-    C.Id, C.Firstname, C.Lastname, C.Address, C.Email, C.CreatedDate
+    C.Id, C.Firstname, C.Lastname, C.Address, C.Email, C.CreatedDate, C.isAdmin
     FROM Customer as C
     WHERE C.Id = ${req.user.id}
   `;
 
     const data = await sqlQuery(query);
-
+    console.log(data);
     return checkResultProfile(req, res, data);
 });
 

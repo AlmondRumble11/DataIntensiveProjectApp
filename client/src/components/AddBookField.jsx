@@ -27,7 +27,7 @@ export default function AddBookField(props) {
             <div style={{padding: "10px 10px 5px 10px"}}>
                 <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                     <FormLabel>Price</FormLabel>
-                    <TextField type="number" id="price" name="price" placeholder="Price" required={true}  autoComplete="off" fullWidth/>
+                    <TextField type="number" id="price"  presicion={2}  name="price" placeholder="Price" required={true}  autoComplete="off" fullWidth/>
                 </FormControl>
                 <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                     <FormLabel>Publication date</FormLabel>
@@ -46,7 +46,7 @@ export default function AddBookField(props) {
             </div>
             <div style={{padding: "10px 10px 10px 10px"}}>
                 <InputLabel>PDF file</InputLabel>
-                <Input id="file" name="file" type="file" required={true} fullWidth />
+                <input id="file" name="file" type="file" required={true} fullWidth/>
             </div>
         </Box>
     )

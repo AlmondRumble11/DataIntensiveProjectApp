@@ -1,9 +1,9 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Alert, AlertTitle} from "@mui/material";
 import React, { useState, useEffect } from 'react'
 import AddBookField from './AddBookField';
 
 export default function AddBookDialog(props) {
-    const { onClose, open } = props;
+    const { onClose, open, setSuccess } = props;
     const initialState = {
         title: null,
         authorFirstname: null,
@@ -20,14 +20,20 @@ export default function AddBookDialog(props) {
 
     const submitForm = (event) =>{
         event.preventDefault();
+        const formData = new FormData();
+        formData.append('file', formValues.file);
+        formData.append('formValues', JSON.stringify(formValues));
+        formData.append('fileName', formValues.file.name);
+
         fetch('http://localhost:3001/book/addbook', {
             method: 'POST',
-            headers: {'Content-type': 'application/json'},
-            body: JSON.stringify(formValues),
+            headers: { 'Location': sessionStorage.getItem("countryCode")},
+            body: formData,
             mode: 'cors'
         }).then(res => {
             res.json().then(data => {
-                alert("New book was added");
+                setSuccess(true);
+             
             });
             
            
@@ -37,7 +43,12 @@ export default function AddBookDialog(props) {
     }
 
     const handleChange = (event) =>  {
-        setFormValues({...formValues, [event.target.id]: event.target.value});
+        console.log(event.target.files);
+        if(event.target.files){
+            setFormValues({...formValues, [event.target.id]: event.target.files[0]});
+        }else{
+            setFormValues({...formValues, [event.target.id]: event.target.value});
+        }
     }
 
     const handleClose = () =>{
@@ -48,6 +59,7 @@ export default function AddBookDialog(props) {
 
     useEffect(() => {
         if (Object.values(formValues).includes(null) || Object.values(formValues).includes('')) return setInvalid(true);
+        console.log(formValues.file.files);
         return setInvalid(false);
     }, [formValues]);
     console.log(formValues);
@@ -63,10 +75,10 @@ export default function AddBookDialog(props) {
                     <Button variant='contained' type="submit" id="submit" onClick={handleClose}>Cancel</Button>
                 </DialogActions>
             </form>
+     
+        }
         </Dialog>
-
-
-
+     
     )
 
 

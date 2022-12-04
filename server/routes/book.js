@@ -4,6 +4,8 @@ var { sqlQuery } = require("../database");
 const path = require('node:path');
 const mime = require('mime');
 
+
+
 function getResult(res, data) {
     if (data === null) {
         return res.status(500).send("Internal error.");
@@ -16,9 +18,16 @@ function getResult(res, data) {
     return res.status(200).json(data);
 }
 
-function validateBook(file) {
-    return !(file.split(".")[1] !== "pdf" || file.split(".").length > 2);
+function getResultSearch(res, data) {
+    if (data === null) {
+        return res.status(500).send("Internal error.");
+    }
 
+    if (!data) {
+        return res.status(404).send("Not found.");
+    }
+
+    return res.status(200).json(data);
 }
 
 router.get("/all", async function(req, res) {
@@ -98,7 +107,7 @@ router.get("/search/:searchTerm", async function(req, res) {
 
     const result = await sqlQuery(query);
 
-    return getResult(res, result);
+    return getResultSearch(res, result);
 });
 
 router.get("/dowload/:id", async function(req, res) {
@@ -117,10 +126,15 @@ router.get("/dowload/:id", async function(req, res) {
 
 
 router.post("/addbook", async function(req, res) {
-    console.log(req.body);
-    if (!validateBook(req.body.file)) {
-        return res.status(500).send("Only supports .pdf files");
-    }
+    console.log(JSON.parse(req.body.formValues));
+    const file = req.files.file;
+    file.mv('book_pdf/' + file.name, function(err, result) {
+            if (err) throw err;
+            res.status(200).json({ msg: "success" });
+        })
+        // if (!validateBook(req.body.file)) {
+        //     return res.status(500).send("Only supports .pdf files");
+        // }
 
     // //Check if book exist
     // if (getBook(req.body.title)) {
