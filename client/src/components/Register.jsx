@@ -25,7 +25,7 @@ const Register = () => {
 
         fetch('http://localhost:3001/api/customer/register', {
             method: 'POST',
-            headers: {'Content-type': 'application/json'},
+            headers: {'Content-type': 'application/json', 'countrycode': sessionStorage.getItem('countryCode')},
             body: JSON.stringify(user),
             mode: 'cors'
         }).then(res => {

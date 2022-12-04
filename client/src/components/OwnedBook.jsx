@@ -16,7 +16,10 @@ function OwnedBook({book}) {
     const DownloadBook = () => {
         fetch(`http://localhost:3001/book/dowload/${book.Id}`, {
             method: 'GET',
-            mode: 'cors'
+            mode: 'cors',
+            headers: {
+                'countrycode': sessionStorage.getItem('countryCode')
+            }
         }).then((res) => res.blob())
         .then((fileBlob) => {
             const link = document.createElement("a");

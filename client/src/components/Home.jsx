@@ -19,7 +19,10 @@ export default function Home() {
         setError(false);
 
         fetch('http://localhost:3001/book/featured', {
-            mode: 'cors'
+            mode: 'cors',
+            headers: {
+                'countrycode': sessionStorage.getItem('countryCode')
+            }
         })
             .then(response => response.json())
             .then(data => setBooks(data))
