@@ -1,6 +1,8 @@
 var express = require("express");
 var router = express.Router();
 var { sqlQuery } = require("../database");
+const path = require('node:path');
+const mime = require('mime');
 
 function getResult(res, data) {
     if (data === null) {
@@ -12,6 +14,11 @@ function getResult(res, data) {
     }
 
     return res.status(200).json(data);
+}
+
+function validateBook(file) {
+    return !(file.split(".")[1] !== "pdf" || file.split(".").length > 2);
+
 }
 
 router.get("/all", async function(req, res) {
@@ -105,6 +112,133 @@ router.get("/dowload/:id", async function(req, res) {
     const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
     const fileName = result[0]["Filename"];
     return res.download(filePath, fileName);
+
+});
+
+
+router.post("/addbook", async function(req, res) {
+    console.log(req.body);
+    if (!validateBook(req.body.file)) {
+        return res.status(500).send("Only supports .pdf files");
+    }
+
+    // //Check if book exist
+    // if (getBook(req.body.title)) {
+    //     res.status(500).send("Book exists.")
+    // }
+
+    // //Author query insert if author does not exist
+    // let authtorId = getAuthor(req.body.authorFirstname, req.body.authorLastname)
+    // if (!gauthtorId) {
+    //     const authorQuery = `
+    //     INSERT INTO Author ( 
+    //         [Firstname], 
+    //         [Lastname], 
+    //         [CountryId],
+    //     ) 
+    //     VALUES ( 
+    //         '${req.body.authorFirstname}',
+    //         '${req.body.authorLastname}'
+    //     )`;
+    //     authtorId = await sqlQuery(authorQuery);
+    // }
+
+    // //Publisher query insert if it does not exist
+    // let publiserId = getPublisher(req.body.publisher);
+    // if (!publiserId) {
+    //     const publisherQuery = `
+    //     INSERT INTO Pusblisher ( 
+    //         [Name], 
+    //         [CountryId],
+    //     ) 
+    //     VALUES ( 
+    //         '${req.body.publisher}',
+    //         '1'
+    //     )`;
+    //     publiserId = await sqlQuery(publisherQuery);
+    // }
+
+    // //Language query insert if it does not exist
+    // let langugageId = getLanguage(req.body.language);
+    // if (!langugageId) {
+    //     const languageQuery = `
+    //     INSERT INTO Pusblisher ( 
+    //         [Name], 
+    //         [CountryId],
+    //     ) 
+    //     VALUES ( 
+    //         '${req.body.language}',
+    //         '1'
+    //     )`;
+    //     langugageId = await sqlQuery(languageQuery);
+    // }
+
+    // //Genre query insert if it does not exist
+    // let genreId = getGenre(req.body.genre);
+    // if (!genreId) {
+    //     const genreQuery = `
+    //     INSERT INTO Pusblisher ( 
+    //         [Name], 
+    //         [CountryId],
+    //     ) 
+    //     VALUES ( 
+    //         '${req.body.genre}',
+    //         '1'
+    //     )`;
+    //     genreId = await sqlQuery(genreQuery);
+    // }
+
+    // // BookDetail query insert
+    // const filename = path.basename(req.body.file);
+    // const filepath = path.dirname(req.body.file);
+    // const contentType = mime.getType(req.body.file);
+    // const bookDetailQuery = `
+    //     INSERT INTO BookDetail ( 
+    //         [Path], 
+    //         [Filename], 
+    //         [DateAdded],
+    //         [ContentType] 
+    //     ) 
+    //     VALUES ( 
+    //         '${filename}',
+    //         '${filepath}', 
+    //         GETDATE(), 
+    //         '${contentType}'
+    //     )`;
+    // await sqlQuery(bookDetailQuery);
+
+    // const bookQuery = `
+    // INSERT INTO BookDetail (
+    //     PublisherId, 
+    //     AuthorId, 
+    //     GenreId, 
+    //     LanguageId, 
+    //     CountryId, 
+    //     Title, 
+    //     PublishDate, 
+    //     Price, 
+    //     AddedDate, 
+    //     [Description], 
+    //     BookDetailId, 
+    //     CountrySpecificInfo
+    // ) 
+    // VALUES ( 
+    //     '${publiserId}',
+    //     '${authtorId}',
+    //     '${genreId}',
+    //     '${langugageId}',
+    //     '1',
+    //     '${req.body.title}',
+    //     '${req.body.date}',
+    //     '${req.body.price}',
+    //     'GETDATE()',
+    //     '${req.body.description}',
+    //     '${bookDetailId}',
+    //     'insert vat',
+    // )`
+    // await sqlQuery(bookQuery);
+
+    return res.status(200).json({ msg: "success" });
 
 });
 

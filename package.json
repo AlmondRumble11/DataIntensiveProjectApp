@@ -14,8 +14,11 @@
     },
     "license": "ISC",
     "dependencies": {
-        "materialize-css": "^1.0.0-rc.2",
         "@material-ui/core": "^4.12.3",
-        "@material-ui/icons": "^4.11.2"
+        "@material-ui/icons": "^4.11.2",
+        "materialize-css": "^1.0.0-rc.2"
+    },
+    "devDependencies": {
+        "prettier": "2.8.0"
     }
 }
