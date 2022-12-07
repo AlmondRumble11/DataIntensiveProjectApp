@@ -27,11 +27,16 @@ GO
 CREATE DATABASE DataIntensiveNorway
 GO
 -- Maybe here?
-DROP LOGIN AdminUser;
+DROP LOGIN  AdminUser;
+GO
 DROP USER IF EXISTS AdminUser;
+GO
 CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
+GO
 CREATE USER AdminUser FOR LOGIN AdminUser;  
-GRANT CONNECT TO AdminUser
+GO
+EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
+GO
 
 
 
@@ -42,10 +47,6 @@ GRANT CONNECT TO AdminUser
 
 */
 
---DECLARE @pdf VARBINARY(MAX)
---SELECT @pdf = BulkColumn
---FROM OPENROWSET(BULK N'C:\DataIntensive\DataIntensiveProjectApp\MockFiles\mock.pdf', SINGLE_BLOB) AS Document;
---SELECT @pdf, DATALENGTH(@pdf)
 DECLARE @countryId INT 
 SET @countryId=0
 
@@ -1110,63 +1111,3 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, Co
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
-
---------------------------------
---USE [DataIntensiveSweden]
---GO
-
---UPDATE [dbo].[Customer]
---   SET [Firstname] = 'KAKKA'
---      ,[Lastname] = 'JUööe'
---      ,[Email] = 'sdjkfdfgdfgdfgdfgdfgdfdfgdfgfgddfgdfdffgdfgdfgdnbsd'
---      ,[Password] = 'kisdhfjksdfs'
-	  
--- WHERE Id = 1
---GO
-
---DECLARE @lastCustomerId int;
---	SET @lastCustomerId = (SELECT TOP 1 Id
---	FROM DataIntensiveSweden.[dbo].Customer 
---	ORDER BY LastUpdatedBy DESC);
---UPDATE DataIntensiveFinland.[dbo].Customer 
---	SET 
---		Firstname =Sweden.Firstname, 
---		Lastname = Sweden.Lastname, 
---		Email = 'sdfsdfsd', 
---		[Password] = Sweden.[Password], 
---		CreatedDate = Sweden.CreatedDate, 
---		LastUpdatedBy = Sweden.LastUpdatedBy, 
---		[Address] = Sweden.[Address] 
---	FROM
---		DataIntensiveSweden.[dbo].Customer AS Sweden
---	WHERE 
---		Sweden.Id = @lastCustomerId
-
---DELETE FROM DataIntensiveSweden.[dbo].Customer where Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
-
---DELETE FROM DataIntensiveGlobal.[dbo].Customer where Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].[Order]
---select * from DataIntensiveNorway.[dbo].OrderItem
-
-
-
---UPDATE  DataIntensiveSweden.[dbo].Customer SET Firstname = 'asdfasdf', Password = 'asdfasdfasdfasdf' WHERE Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
---select * from DataIntensiveGlobal.[dbo].Customer
-
-
---INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
---select * from DataIntensiveFinland.[dbo].Book inner join DataIntensiveFinland.[dbo].BookDetail  on DataIntensiveFinland.[dbo].BookDetail.Id = DataIntensiveFinland.[dbo].Book.BookDetailId
---select * from Customer
---SELECT
---    [Filename], [Path]
---    FROM DataIntensiveFinland.[dbo].BookDetail
---    WHERE Id = 1
