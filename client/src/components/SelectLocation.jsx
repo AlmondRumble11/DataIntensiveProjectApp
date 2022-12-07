@@ -3,22 +3,24 @@ import { Box } from '@mui/system'
 import React from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
+import {useTranslation} from 'react-i18next';
 // Source for using geolocation: https://www.youtube.com/watch?v=VK9F8BWrOgY
 
 export const SelectLocation = () => {
+	const { t } = useTranslation(['i18n']);
 	const [isLocationAllowed, setIsLocationAllowed] = useState(true)
 	const supportedCountries =
 	[
 		{
-			name: 'Finland', 
+			name: 'Suomi', 
 			code: 'FI'
 		},
 		{
-			name: 'Sweden', 
+			name: 'Sverige', 
 			code: 'SWE'
 		},
 		{
-			name: 'Norway', 
+			name: 'Norge', 
 			code: 'NOR'
 		}
 	];
@@ -73,14 +75,14 @@ export const SelectLocation = () => {
 
   return (
     <Box>
-			<Typography padding={2} variant='h4'>Select your location</Typography>
-			{isLocationAllowed && <Button size='small' variant="contained" onClick={findMyCountry}>Use My Current Location</Button>}
+			<Typography padding={2} variant='h4'>{t("SelectYourLoc")}</Typography>
+			{isLocationAllowed && <Button size='small' variant="contained" onClick={findMyCountry}>{t("UseMyLoc")}</Button>}
 			{!isLocationAllowed && 
 				<Box>
-					<Typography variant='body'>Please select which country's shop you want to use!</Typography>
+					<Typography variant='body'>{t("SelectCountry")}</Typography>
 					<Box sx={{m : 2}}>
 						{supportedCountries.map((country) => (
-										<Button size='small' variant="contained" sx={{m: 0.5}} key={country.code} id={country.code} onClick={setCountryCode}> {country.name} </Button>
+										<Button size='small' variant="contained" sx={{m: 0.5}} key={country.code} id={country.code} onClick={setCountryCode}>{country.name}</Button>
 									))}
 					</Box>
 				</Box>

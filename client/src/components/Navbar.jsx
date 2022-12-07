@@ -165,7 +165,7 @@ const ResponsiveAppBar = () => {
                             sx={{ display: { xs: 'block', md: 'none' } }}>
                             {/* Listing menu items that are same as the normal desktop navigation*/}
                             <MenuItem component={RouterLink} to='/location' color="inherit" style={{ padding: '10px' }}>
-                                {t('My Location')}
+                                {t('MyLocation')}
                             </MenuItem>
                             {isCountrySelected && <MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }}>
                                 {t('Home')}
@@ -188,7 +188,7 @@ const ResponsiveAppBar = () => {
                             {
                                 ["EN", "SWE", "NO", "FI"].map(lang => {
                                     return (
-                                        <Button key={lang} sx={{ color: context.language === lang ? "red" : "white" }} onClick={() => { handleLanguageChange(lang) }}>
+                                        <Button key={lang} sx={{ color: context.language === lang ? "red" : "black" }} onClick={() => { handleLanguageChange(lang) }}>
                                             {lang}
                                         </Button>
                                     );
@@ -202,7 +202,7 @@ const ResponsiveAppBar = () => {
                     {/* Creating links to pages. Are shown in the desktop mode due to md beign flex and xs none meaning on extra small screens this is hidden*/}
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
                         <MenuItem component={RouterLink} to='/location' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
-                            {t('My Location')}
+                            {t('MyLocation')}
                         </MenuItem>
                         {isCountrySelected &&<MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Home')}
