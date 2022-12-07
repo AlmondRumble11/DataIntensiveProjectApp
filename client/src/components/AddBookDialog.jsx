@@ -32,7 +32,7 @@ export default function AddBookDialog(props) {
 
         fetch('http://localhost:3001/book/addbook', {
             method: 'POST',
-            headers: { 'Location': sessionStorage.getItem("countryCode")},
+            headers: { 'countryCode': sessionStorage.getItem("countryCode")},
             body: formData,
             mode: 'cors'
         }).then(res => {
