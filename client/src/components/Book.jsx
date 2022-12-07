@@ -7,11 +7,12 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { useShoppingCart } from '../context/shoppingCartContext';
-
+import BookDetailDialog from './BookDetailDialog';
 //Displays single book as a card
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function Book({ book }) {
-
+    const [open, setOpen] = React.useState(false);
+    const [success, setSuccess] = React.useState(false);
     const context = useShoppingCart();
 
     const addBookToShoppingCart = () => {
@@ -21,10 +22,18 @@ function Book({ book }) {
             context.setItems(newItems);
         }
     }
+    const setModalState = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
     const card = (
         <React.Fragment>
+            <BookDetailDialog open={open} onClose={handleClose} book={book} addBookToShoppingCart={addBookToShoppingCart}></BookDetailDialog>
             <CardContent sx={{ borderRadius: 2, border: '1.5px solid black' }}>
-                <Typography align='left' variant="h4" component="div">
+                <Typography align='left' variant="h4" component="div"  onClick={setModalState}>
                     {book.Title}
                 </Typography>
                 <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
