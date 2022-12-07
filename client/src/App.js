@@ -14,6 +14,9 @@ import { LanguageContextProvider } from './context/languageContext';
 import { Suspense } from "react";
 
 function App() {
+
+
+
   return (
     <Suspense fallback={null}>
       <Router>
@@ -22,14 +25,14 @@ function App() {
             <LanguageContextProvider>
               <ResponsiveAppBar />
               <Routes>
-                <Route path='/' element={<Home />}></Route>
-                <Route path='/allbooks' element={<AllBooks />}></Route>
-                <Route path='/book/:bookId' element={<BookDetails />}></Route>
-                <Route path='/profile' element={<Profile />}></Route>
-                <Route path='/login' element={<Login />}></Route>
-                <Route path='/register' element={<Register />}></Route>
-                <Route path='/checkout' element={<Checkout />}></Route>
-                <Route path='/location' element={<SelectLocation />}></Route>
+                <Route path='/' element={<Home />}></Route> 
+                <Route path='/allbooks' element={<AllBooks />}></Route> 
+                <Route path='/book/:bookId' element={<BookDetails />}></Route> 
+                <Route path='/profile' element={<Profile />}></Route> 
+                <Route path='/login' element={<Login />}></Route> 
+                <Route path='/register' element={<Register />}></Route> 
+                <Route path='/checkout' element={<Checkout />}></Route> 
+                <Route path='/location' element={<SelectLocation/>}></Route>
               </Routes>
             </LanguageContextProvider>
           </ShoppingCartProvider>
