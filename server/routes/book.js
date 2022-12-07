@@ -27,7 +27,12 @@ function getResultSearch(res, data) {
   }
 
 router.get("/all", async function(req, res) {
-    const result = await sqlQuery("select * from Book", req.headers.countrycode);
+    const result = await sqlQuery(`select 
+    B.Id, B.Title, B.Description, B.Price,
+    A.FirstName, A.LastName
+    from Book as B
+    inner join Author as A on B.authorId = A.Id
+    `, req.headers.countrycode);
     return getResult(res, result);
 });
 

@@ -28,7 +28,7 @@ function Book({ book }) {
                     {book.Title}
                 </Typography>
                 <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
-                    {book.AuthorId}
+                    {book.FirstName} {book.LastName}
                 </Typography>
                 <Stack direction="row" justifyContent="space-between" spacing={5}>
                     <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
