@@ -24,7 +24,7 @@ export default function Checkout() {
             {books.map((book) => (
                 <ShoppingCartItem key={book.Id} book={book} removeItem={removeItem} />
             ))}
-            {!books?.length > 0 && "Nothing on cart."}
+            {!books?.length > 0 && <div>{t('EmptyCart')}</div>}
         </div>
 
     )
@@ -33,7 +33,7 @@ export default function Checkout() {
 
 
 const ShoppingCartItem = ({ book, removeItem }) => {
-
+    const { t } = useTranslation(['i18n']);
     return (
         <Box sx={{ border: 0, width: '60%', margin: 'auto', mb: 1.5 }}>
             <Card variant="outlined">
@@ -49,7 +49,7 @@ const ShoppingCartItem = ({ book, removeItem }) => {
                     </div>
 
                     <div style={{ display: 'flex', justifyContent: 'end' }}>
-                        <Button sx={{ maxHeight: '40px' }} variant="contained" onClick={() => removeItem(book.Id)}>Remove</Button>
+                        <Button sx={{ maxHeight: '40px' }} variant="contained" onClick={() => removeItem(book.Id)}>{t('Remove')}</Button>
                     </div>
 
                 </CardContent>
