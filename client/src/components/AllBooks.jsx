@@ -43,7 +43,10 @@ export default function AllBooks() {
 
         fetch(`http://localhost:3001/book/search/${searchValue}`, {
             method: 'GET',
-            mode: 'cors'
+            mode: 'cors',
+            headers: {
+                'countrycode': sessionStorage.getItem('countryCode')
+            }
         }).then(res => {
             if (res.ok) {
                 return res.json().then(data => {
@@ -71,9 +74,11 @@ export default function AllBooks() {
     const getAllBooks = () => {
         setLoading(true);
         setError(false);
-
         fetch('http://localhost:3001/book/all', {
-            mode: 'cors'
+            mode: 'cors',
+            headers: {
+                'countrycode': sessionStorage.getItem('countryCode')
+            }
         })
             .then(response => response.json())
             .then(data => setBooks(data))

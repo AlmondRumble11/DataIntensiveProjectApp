@@ -29,6 +29,7 @@ export const SelectLocation = () => {
 			setIsLocationAllowed(true)
 			const ltd = position.coords.latitude;
 			const lng = position.coords.longitude;
+			let isCountrySupported = false
 
 			// * The api key must be set to the env variables before running react
 			const locationApiUrl = `
@@ -37,8 +38,16 @@ export const SelectLocation = () => {
 			fetch(locationApiUrl)
 			.then(res => res.json())
 			.then(data => {
-				sessionStorage.setItem('countryCode', data.countryCode);
-				navigate(`/`, { replace: true });
+				supportedCountries.forEach(country => {
+					if(country.code === data.countryCode){
+						sessionStorage.setItem('countryCode', data.countryCode);
+						isCountrySupported = true
+						navigate(`/`, { replace: true });
+					}
+				});
+				if(!isCountrySupported){
+					setIsLocationAllowed(false);
+				}
 			})
 			.catch(error => {
 				setIsLocationAllowed(false);

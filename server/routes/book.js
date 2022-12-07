@@ -27,7 +27,7 @@ function getResultSearch(res, data) {
   }
 
 router.get("/all", async function(req, res) {
-    const result = await sqlQuery("select * from Book");
+    const result = await sqlQuery("select * from Book", req.headers.countrycode);
     return getResult(res, result);
 });
 
@@ -38,7 +38,7 @@ router.get("/featured", async function(req, res) {
   from Book as B
   inner join Author as A on B.authorId = A.Id
   order by addedDate desc
-  `);
+  `, req.headers.countrycode);
     return getResult(res, result);
 });
 
@@ -55,7 +55,7 @@ router.get("/id/:id", async function(req, res) {
   inner join Author as A on B.authorId = A.Id
   inner join Language as L on B.languageId = L.Id
   inner join Genre as G on B.genreId = G.Id
-  where B.Id = ${bookId}`);
+  where B.Id = ${bookId}`, req.headers.countrycode);
 
     return getResult(res, result);
 });
@@ -73,7 +73,7 @@ router.get("/name/:name", async function(req, res) {
   inner join Author as A on B.authorId = A.Id
   inner join Language as L on B.languageId = L.Id
   inner join Genre as G on B.genreId = G.Id
-  where B.Title = '${bookName}'`);
+  where B.Title = '${bookName}'`, req.headers.countrycode);
 
     return getResult(res, result);
 });
@@ -101,7 +101,7 @@ router.get("/search/:searchTerm", async function(req, res) {
     L.Name like '%${req.params.searchTerm}%'`;
 
 
-    const result = await sqlQuery(query);
+    const result = await sqlQuery(query, req.headers.countrycode);
 
     return getResultSearch(res, result);
 });
@@ -112,7 +112,7 @@ router.get("/dowload/:id", async function(req, res) {
     SELECT
     Filename, Path, ContentType
     FROM BookDetail
-    WHERE Id = ${bookId}`);
+    WHERE Id = ${bookId}`, req.headers.countrycode);
 
     const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
     const fileName = result[0]["Filename"];

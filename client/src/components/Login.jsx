@@ -28,7 +28,7 @@ function Login() {
         //Source for fetch res https://stackoverflow.com/questions/47267221/fetch-response-json-and-response-status
         fetch('http://localhost:3001/api/customer/login', {
             method: 'POST',
-            headers: {'Content-type': 'application/json'},
+            headers: {'Content-type': 'application/json', 'countrycode': sessionStorage.getItem('countryCode')},
             body: JSON.stringify(user),
             mode: 'cors'
         }).then(res => {

@@ -38,7 +38,8 @@ const ResponsiveAppBar = () => {
     }, []);
 
     //Based on this boolean some pages are hidden from the user. For example when user is not logged in there is no reason to show logout button.
-    var isLoggedIn = false;
+    let isLoggedIn = false;
+    let isCountrySelected = false;
 
     // These useStates and functions are used to handle the closing and opening of the drop down menus
     const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -67,6 +68,10 @@ const ResponsiveAppBar = () => {
     //Checking if the user is logged in. 
     if (sessionStorage.getItem('token')) {
         isLoggedIn = true
+    }
+
+    if (sessionStorage.getItem('countryCode')) {
+        isCountrySelected = true
     }
 
     // const Search = styled('div')(({ theme }) => ({
@@ -162,24 +167,24 @@ const ResponsiveAppBar = () => {
                             <MenuItem component={RouterLink} to='/location' color="inherit" style={{ padding: '10px' }}>
                                 {t('My Location')}
                             </MenuItem>
-                            <MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }}>
+                            {isCountrySelected && <MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }}>
                                 {t('Home')}
-                            </MenuItem>
+                            </MenuItem>}
                             <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{ padding: '10px' }}>
                                 {t('All books')}
                             </MenuItem>
-                            {!isLoggedIn && <MenuItem component={RouterLink} to='/login' color="inherit" style={{ padding: '10px' }}>
+                            {!isLoggedIn && isCountrySelected && <MenuItem component={RouterLink} to='/login' color="inherit" style={{ padding: '10px' }}>
                                 {t('Login')}
                             </MenuItem>}
-                            {isLoggedIn && <MenuItem component={RouterLink} to='/profile' color="inherit" style={{ padding: '10px' }}>
+                            {isLoggedIn && isCountrySelected && <MenuItem component={RouterLink} to='/profile' color="inherit" style={{ padding: '10px' }}>
                                 {t('Profile')}
                             </MenuItem>}
-                            {!isLoggedIn && <MenuItem component={RouterLink} to='/register' color="inherit" style={{ padding: '10px' }}>
+                            {!isLoggedIn && isCountrySelected && <MenuItem component={RouterLink} to='/register' color="inherit" style={{ padding: '10px' }}>
                                 {t('Register')}
                             </MenuItem>}
-                            <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{ padding: '10px' }}>
+                            { isCountrySelected &&<MenuItem component={RouterLink} to='/checkout' color="inherit" style={{ padding: '10px' }}>
                                 {t('Checkout')}
-                            </MenuItem>
+                            </MenuItem> }
                             {
                                 ["EN", "SWE", "NO", "FI"].map(lang => {
                                     return (
@@ -189,7 +194,7 @@ const ResponsiveAppBar = () => {
                                     );
                                 })
                             }    
-                            {isLoggedIn && <Button sx={{ color: "red" }} onClick={logOut}>
+                            {isLoggedIn && isCountrySelected && <Button sx={{ color: "red" }} onClick={logOut}>
                                 {t('Logout')}
                             </Button>}
                         </Menu>
@@ -199,24 +204,24 @@ const ResponsiveAppBar = () => {
                         <MenuItem component={RouterLink} to='/location' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('My Location')}
                         </MenuItem>
-                        <MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        {isCountrySelected &&<MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Home')}
-                        </MenuItem>
-                        <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        </MenuItem>}
+                        {isCountrySelected &&<MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('All books')}
-                        </MenuItem>
-                        {!isLoggedIn && <MenuItem component={RouterLink} to='/login' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        </MenuItem>}
+                        {!isLoggedIn && isCountrySelected &&<MenuItem component={RouterLink} to='/login' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Login')}
                         </MenuItem>}
-                        {isLoggedIn && <MenuItem component={RouterLink} to='/profile' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        {isLoggedIn && isCountrySelected &&<MenuItem component={RouterLink} to='/profile' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Profile')}
                         </MenuItem>}
-                        {!isLoggedIn && <MenuItem component={RouterLink} to='/register' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        {!isLoggedIn && isCountrySelected &&<MenuItem component={RouterLink} to='/register' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Register')}
                         </MenuItem>}
-                        <MenuItem component={RouterLink} to='/checkout' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
+                        {isCountrySelected &&<MenuItem component={RouterLink} to='/checkout' color="inherit" style={{ padding: '10px' }} onClick={() => { handleCloseNavMenu() }}>
                             {t('Checkout')}
-                        </MenuItem>
+                        </MenuItem>}
                         {
                             ["EN", "SWE", "NO", "FI"].map(lang => {
                                 return (
@@ -226,7 +231,7 @@ const ResponsiveAppBar = () => {
                                 );
                             })
                         }
-                        {isLoggedIn && <Button sx={{ color: "red" }} onClick={logOut}>
+                        {isLoggedIn && isCountrySelected &&<Button sx={{ color: "red" }} onClick={logOut}>
                             {t('Logout')}
                         </Button>}
                     </Box>

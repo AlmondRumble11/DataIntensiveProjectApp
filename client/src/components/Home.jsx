@@ -3,23 +3,40 @@ import { useState, useEffect } from 'react';
 import Book from './Book';
 import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
     const { t } = useTranslation(['i18n']);
     const [books, setBooks] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    let isCountrySelected = false
+    let navigate = useNavigate();
+
+   
 
     useEffect(() => {
-        getFeaturedBooks();
+        if (sessionStorage.getItem('countryCode')) {
+            isCountrySelected = true;
+        }
+        if (isCountrySelected) {
+            getFeaturedBooks();
+        }else{
+            navigate(`/location`, { replace: true })
+        }   
+        
     }, []);
 
+  
     const getFeaturedBooks = () => {
         setLoading(true);
         setError(false);
 
         fetch('http://localhost:3001/book/featured', {
-            mode: 'cors'
+            mode: 'cors',
+            headers: {
+                'countrycode': sessionStorage.getItem('countryCode')
+            }
         })
             .then(response => response.json())
             .then(data => setBooks(data))
