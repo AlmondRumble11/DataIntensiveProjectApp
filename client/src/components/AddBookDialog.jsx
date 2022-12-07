@@ -18,6 +18,11 @@ export default function AddBookDialog(props) {
     const [ formValues, setFormValues ] = useState(initialState);
     const [ invalid, setInvalid] = useState(true);
 
+    const handleClose = () =>{
+        setInvalid(true);
+        setFormValues({...initialState});
+        onClose(false);
+    }
     const submitForm = (event) =>{
         event.preventDefault();
         const formData = new FormData();
@@ -32,7 +37,9 @@ export default function AddBookDialog(props) {
             mode: 'cors'
         }).then(res => {
             res.json().then(data => {
-                setSuccess(true);
+                console.log(data);
+                setSuccess(data.status);
+
              
             });
             
@@ -51,18 +58,11 @@ export default function AddBookDialog(props) {
         }
     }
 
-    const handleClose = () =>{
-        setInvalid(true);
-        setFormValues({...initialState});
-        onClose(false);
-    }
-
     useEffect(() => {
         if (Object.values(formValues).includes(null) || Object.values(formValues).includes('')) return setInvalid(true);
-        console.log(formValues.file.files);
         return setInvalid(false);
     }, [formValues]);
-    console.log(formValues);
+
     return (
         <Dialog maxWidth="sm" fullWidth open={open} onClose={handleClose}>
             <DialogTitle>Add a new book</DialogTitle>
@@ -75,12 +75,6 @@ export default function AddBookDialog(props) {
                     <Button variant='contained' type="submit" id="submit" onClick={handleClose}>Cancel</Button>
                 </DialogActions>
             </form>
-     
-        }
         </Dialog>
-     
     )
-
-
-
 }

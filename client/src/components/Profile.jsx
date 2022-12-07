@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
-import { Typography } from '@mui/material';
+import { Typography, Alert, AlertTitle, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-
+import AddBookDialog from './AddBookDialog';
 export default function Profile() {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [open, setOpen] = React.useState(false);
+    const [success, setSuccess] = useState(false);
     const { t } = useTranslation(['i18n']);
 
     useEffect(() => {
@@ -71,6 +73,14 @@ export default function Profile() {
     }
     ]);
 
+    const setModalState = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     if (loading) {
         return (
             <div>
@@ -80,12 +90,21 @@ export default function Profile() {
             </div>
         )
     }
-
+    console.log(user);
     return (
         <div>
+            <Box>
+            {success && <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                This is an error alert — <strong>check it out!</strong>
+                <Button onClick={() => setSuccess(false)}>Close</Button>
+                </Alert>}
+            </Box>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>
             </Box>
+            { user[0]?.isAdmin != null && <Button variant="outlined" onClick={setModalState}>Add new book</Button>}
+            <AddBookDialog open={open} onClose={handleClose} setSuccess={setSuccess}></AddBookDialog>
             {[...user].map((user) => (
                 <UserDetails key={user.Id} user={user} />
             ))}
