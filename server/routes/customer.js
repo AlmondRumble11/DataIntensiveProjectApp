@@ -83,21 +83,21 @@ router.post('/login', async(req, res) => {
   from Customer as C
   where C.Email = '${req.body.email}'`;
 
-    const result = await sqlQuery(query);
+    const result = await sqlQuery(query, req.headers.countrycode);
 
     return checkResultLogin(req, res, result);
 });
 
 router.post('/register', async(req, res) => {
 
-    const query = `
+  const query = `
   select 1
   from Customer
   where Customer.Email = '${req.body.email}'`;
 
-    if (checkCustomerBody(req, res) == 1) {
-        const resultQuery = await sqlQuery(query);
-        if (resultQuery.length < 1) {
+  if (checkCustomerBody(req, res) == 1){
+    const resultQuery = await sqlQuery(query, req.headers.countrycode);
+    if( resultQuery.length < 1){
 
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(req.body.password, salt);
@@ -117,7 +117,7 @@ router.post('/register', async(req, res) => {
         GETDATE(), 
         '${req.body.address}')`
 
-            const resultInsert = await sqlInsert(insertQuery);
+      const resultInsert = await sqlInsert(insertQuery, req.headers.countrycode);
 
             if (resultInsert === null) {
                 return res.status(500).json({ message: "Internal error" });
@@ -144,9 +144,9 @@ router.get('/profile', authenticateToken, async(req, res) => {
     WHERE C.Id = ${req.user.id}
   `;
 
-    const data = await sqlQuery(query);
-    console.log(data);
-    return checkResultProfile(req, res, data);
+  const data = await sqlQuery(query, req.headers.countrycode);
+
+  return checkResultProfile(req, res, data);
 });
 
 
@@ -168,8 +168,8 @@ router.get('/books', authenticateToken, async(req, res) => {
     inner join Genre as G on B.genreId = G.Id
     where O.CustomerId = ${req.user.id}
   `;
-
-    const result = await sqlQuery(query);
+  
+  const result = await sqlQuery(query, req.headers.countrycode);
 
     return checkResultProfile(req, res, result);
 });

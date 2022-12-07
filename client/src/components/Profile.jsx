@@ -27,7 +27,7 @@ export default function Profile() {
 
         fetch('http://localhost:3001/api/customer/profile', {
             method: 'GET',
-            headers: { 'Authorization': `Bearer ${jwt}` },
+            headers: { 'Authorization': `Bearer ${jwt}`, 'countrycode': sessionStorage.getItem('countryCode')},
             mode: 'cors'
         }).then(res => {
             if (res.ok) {

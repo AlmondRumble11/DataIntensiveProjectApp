@@ -31,7 +31,7 @@ function getResultSearch(res, data) {
 }
 
 router.get("/all", async function(req, res) {
-    const result = await sqlQuery("select * from Book");
+    const result = await sqlQuery("select * from Book", req.headers.countrycode);
     return getResult(res, result);
 });
 
@@ -42,7 +42,7 @@ router.get("/featured", async function(req, res) {
   from Book as B
   inner join Author as A on B.authorId = A.Id
   order by addedDate desc
-  `);
+  `, req.headers.countrycode);
     return getResult(res, result);
 });
 
@@ -59,7 +59,7 @@ router.get("/id/:id", async function(req, res) {
   inner join Author as A on B.authorId = A.Id
   inner join Language as L on B.languageId = L.Id
   inner join Genre as G on B.genreId = G.Id
-  where B.Id = ${bookId}`);
+  where B.Id = ${bookId}`, req.headers.countrycode);
 
     return getResult(res, result);
 });
@@ -77,7 +77,7 @@ router.get("/name/:name", async function(req, res) {
   inner join Author as A on B.authorId = A.Id
   inner join Language as L on B.languageId = L.Id
   inner join Genre as G on B.genreId = G.Id
-  where B.Title = '${bookName}'`);
+  where B.Title = '${bookName}'`, req.headers.countrycode);
 
     return getResult(res, result);
 });
@@ -105,7 +105,7 @@ router.get("/search/:searchTerm", async function(req, res) {
     L.Name like '%${req.params.searchTerm}%'`;
 
 
-    const result = await sqlQuery(query);
+    const result = await sqlQuery(query, req.headers.countrycode);
 
     return getResultSearch(res, result);
 });
@@ -116,7 +116,7 @@ router.get("/dowload/:id", async function(req, res) {
     SELECT
     Filename, Path, ContentType
     FROM BookDetail
-    WHERE Id = ${bookId}`);
+    WHERE Id = ${bookId}`, req.headers.countrycode);
 
     const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
     const fileName = result[0]["Filename"];
@@ -124,54 +124,47 @@ router.get("/dowload/:id", async function(req, res) {
 
 });
 
-async function getBook(title) {
+async function getBook(title, countrycode) {
     return await sqlQuery(`
     SELECT
     Id
     FROM Book
-    WHERE Title = '${title}'`);
+    WHERE Title = '${title}'`, countrycode);
 }
 
-async function getAuthor(firstname, lastname) {
+async function getAuthor(firstname, lastname, countrycode) {
     return await sqlQuery(`
     SELECT
     Id
     FROM Author
     WHERE Firstname = '${firstname}'
-    AND Lastname = '${lastname}'`);
+    AND Lastname = '${lastname}'`, countrycode);
 }
 
-async function getPublisher(name) {
+async function getPublisher(name, countrycode) {
     return await sqlQuery(`
     SELECT
     Id
     FROM Publisher
-    WHERE [Name] = '${name}'`);
+    WHERE [Name] = '${name}'`, countrycode);
 }
 
-async function getLanguage(name) {
+async function getLanguage(name, countrycode) {
     return await sqlQuery(`
     SELECT
     Id
     FROM Language
-    WHERE [Name] = '${name}'`);
+    WHERE [Name] = '${name}'`, countrycode);
 }
 
-async function getGenre(name) {
+async function getGenre(name, countrycode) {
     return await sqlQuery(`
     SELECT
     Id
     FROM Genre
-    WHERE [Name] = '${name}'`);
+    WHERE [Name] = '${name}'`, countrycode);
 }
 
-async function getBookDetail(name) {
-    return await sqlQuery(`
-    SELECT
-    Id
-    FROM BookDetail
-    WHERE [Name] = '${name}'`);
-}
 
 router.post("/addbook", async function(req, res) {
     const formValues = JSON.parse(req.body.formValues);
@@ -187,7 +180,7 @@ router.post("/addbook", async function(req, res) {
     }
 
     //Check if book exist
-    const result = await getBook(formValues["title"]);
+    const result = await getBook(formValues["title"], req.headers.countrycode);
     if (result.length != 0) {
         return res.status(502).json("Book exists.")
     }
@@ -200,7 +193,7 @@ router.post("/addbook", async function(req, res) {
 
 
     //Author query insert if author does not exist
-    const authtor = await getAuthor(formValues["authorFirstname"], formValues["authorLastname"]);
+    const authtor = await getAuthor(formValues["authorFirstname"], formValues["authorLastname"], req.headers.countrycode);
     if (authtor.length == 0) {
         const authorQuery = `
         INSERT INTO Author ( 
@@ -213,14 +206,14 @@ router.post("/addbook", async function(req, res) {
             '${formValues["authorLastname"]}',
             '1'
         ) SELECT SCOPE_IDENTITY() AS Id`;
-        const insertedAuthor = await sqlInsert(authorQuery);
+        const insertedAuthor = await sqlInsert(authorQuery, req.headers.countrycode);
         authtorId = insertedAuthor.recordset[0].Id;
     } else {
         authtorId = authtor[0].Id;
     }
 
     //Publisher query insert if it does not exist
-    const publisher = await getPublisher(formValues["publisher"]);
+    const publisher = await getPublisher(formValues["publisher"], req.headers.countrycode);
     if (publisher.length == 0) {
         const publisherQuery = `
             INSERT INTO Publisher ( 
@@ -231,7 +224,7 @@ router.post("/addbook", async function(req, res) {
                 '${formValues["publisher"]}',
                 '1'
             ) SELECT SCOPE_IDENTITY() AS Id`;
-        const insertedPublisher = await sqlInsert(publisherQuery);
+        const insertedPublisher = await sqlInsert(publisherQuery, req.headers.countrycode);
         publisherId = insertedPublisher.recordset[0].Id;
     } else {
         publisherId = publisher[0].Id;
@@ -240,7 +233,7 @@ router.post("/addbook", async function(req, res) {
 
 
     //Language query insert if it does not exist
-    const language = await getLanguage(formValues["language"]);
+    const language = await getLanguage(formValues["language"], req.headers.countrycode);
     if (language.length == 0) {
         const languageQuery = `
             INSERT INTO Language ( 
@@ -251,14 +244,14 @@ router.post("/addbook", async function(req, res) {
                 '${formValues["language"]}',
                 '1'
             ) SELECT SCOPE_IDENTITY() AS Id`;
-        const insertedLanguage = await sqlInsert(languageQuery);
+        const insertedLanguage = await sqlInsert(languageQuery, req.headers.countrycode);
         languageId = insertedLanguage.recordset[0].Id;
     } else {
         languageId = language[0].Id;
     }
 
     //Genre query insert if it does not exist
-    const genre = await getGenre(formValues["genre"]);
+    const genre = await getGenre(formValues["genre"], req.headers.countrycode);
     if (genre.length == 0) {
         const genreQuery = `
             INSERT INTO Genre ( 
@@ -269,7 +262,7 @@ router.post("/addbook", async function(req, res) {
                 '${formValues["genre"]}',
                 '1'
             ) SELECT SCOPE_IDENTITY() AS Id`;
-        const insertedGenre = await sqlInsert(genreQuery);
+        const insertedGenre = await sqlInsert(genreQuery, req.headers.countrycode);
 
         genreId = insertedGenre.recordset[0].Id;
     } else {
@@ -294,7 +287,7 @@ router.post("/addbook", async function(req, res) {
                 GETDATE(), 
                 '${contentType}'
             ) SELECT SCOPE_IDENTITY() AS Id`;
-        const insertedBookDetail = await sqlInsert(bookDetailQuery);
+        const insertedBookDetail = await sqlInsert(bookDetailQuery, req.headers.countrycode);
         const bookDetailId = insertedBookDetail.recordset[0].Id;
         const bookQuery = `
         INSERT INTO Book (
@@ -326,7 +319,7 @@ router.post("/addbook", async function(req, res) {
             'insert vat'
         )`;
 
-        await sqlInsert(bookQuery);
+        await sqlInsert(bookQuery, req.headers.countrycode);
         file.mv('book_pdf/' + file.name, function(err, result) {
             if (err) throw err;
         });
