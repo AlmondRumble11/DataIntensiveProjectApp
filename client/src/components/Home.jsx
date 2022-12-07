@@ -1,5 +1,4 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 import Book from './Book';
 import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +13,7 @@ export default function Home() {
     let navigate = useNavigate();
 
    
+
 
     useEffect(() => {
         if (sessionStorage.getItem('countryCode')) {
@@ -48,16 +48,16 @@ export default function Home() {
                 setLoading(false);
             })
     }
-
     return (
         <div>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t("Featured books")}</h1>
             </Box>
-            {books.map((book) => (
+            { books.map((book) => (
                 <Book key={book.Id} book={book} />
             ))}
             {!books?.length > 0 && <div>{t('No books')}</div>}
+
         </div>
     )
 

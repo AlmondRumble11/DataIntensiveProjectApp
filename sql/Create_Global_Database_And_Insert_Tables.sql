@@ -6,26 +6,10 @@
 
 */
 USE master
-IF EXISTS(SELECT * FROM sys.databases WHERE name = 'DataIntensiveGlobal')
-BEGIN
-	DROP DATABASE DataIntensiveGlobal
-	
-END
-IF EXISTS(SELECT * FROM sys.databases WHERE name = 'DataIntensiveFinland')
-BEGIN
-	DROP DATABASE DataIntensiveFinland
-	
-END
-IF EXISTS(SELECT * FROM sys.databases WHERE name = 'DataIntensiveSweden')
-BEGIN
-	DROP DATABASE DataIntensiveSweden
-
-END
-	IF EXISTS(SELECT * FROM sys.databases WHERE name = 'DataIntensiveNorway')
-BEGIN
-	DROP DATABASE DataIntensiveNorway
-	
-END
+DROP DATABASE IF EXISTS DataIntensiveGlobal
+DROP DATABASE IF EXISTS DataIntensiveFinland
+DROP DATABASE IF EXISTS DataIntensiveSweden
+DROP DATABASE IF EXISTS DataIntensiveNorway
 
 /*
 
@@ -34,17 +18,26 @@ END
 	
 */
 
-	CREATE DATABASE DataIntensiveGlobal
-	CREATE DATABASE DataIntensiveFinland
-	CREATE DATABASE DataIntensiveSweden
-	CREATE DATABASE DataIntensiveNorway
+CREATE DATABASE DataIntensiveGlobal
+GO
+CREATE DATABASE DataIntensiveFinland
+GO
+CREATE DATABASE DataIntensiveSweden
+GO
+CREATE DATABASE DataIntensiveNorway
+GO
+-- Maybe here?
+DROP LOGIN  AdminUser;
+GO
+DROP USER IF EXISTS AdminUser;
+GO
+CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
+GO
+CREATE USER AdminUser FOR LOGIN AdminUser;  
+GO
+EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
+GO
 
-	-- Maybe here?
-	DROP LOGIN  AdminUser;
-	DROP USER IF EXISTS AdminUser;
-	CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
-	CREATE USER AdminUser FOR LOGIN AdminUser;  
-	GRANT CONNECT TO AdminUser
 
 
 /*
@@ -54,10 +47,6 @@ END
 
 */
 
---DECLARE @pdf VARBINARY(MAX)
---SELECT @pdf = BulkColumn
---FROM OPENROWSET(BULK N'C:\DataIntensive\DataIntensiveProjectApp\MockFiles\mock.pdf', SINGLE_BLOB) AS Document;
---SELECT @pdf, DATALENGTH(@pdf)
 DECLARE @countryId INT 
 SET @countryId=0
 
@@ -97,9 +86,9 @@ BEGIN
 		Id int IDENTITY	PRIMARY KEY NOT NULL,
 		[Name] varchar(255) NULL 
 	)
-	CREATE TABLE Publisher(
+	CREATE TABLE Publisher( 
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		[Name] varchar(255), 
+		[Name] varchar(255) UNIQUE NOT NULL, 
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
 	)
 	CREATE TABLE Author(
@@ -113,31 +102,32 @@ BEGIN
 		Id int IDENTITY PRIMARY KEY NOT NULL,
 		Firstname varchar(255) NULL,
 		Lastname varchar(255) NULL,
-		Email varchar(255) NULL,
+		Email varchar(255) UNIQUE NULL,
 		[Password] varchar(255) NULL,
 		CreatedDate DATETIME NULL,
 		[Address] varchar(255) NULL,
-		LastUpdatedBy TIMESTAMP NULL 
+		LastUpdatedBy TIMESTAMP NULL,
+		[isAdmin] int NULL
 	) 
 
 	CREATE TABLE [Language](
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		[Name] varchar(255) NULL,
+		[Name] varchar(255) UNIQUE NOT NULL,
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
 	)
 
 	CREATE TABLE Genre(
 		Id int IDENTITY PRIMARY KEY  NOT NULL,
-		[Name] varchar(255) NULL,
+		[Name] varchar(255) UNIQUE NOT NULL,
 		CountryId int FOREIGN KEY REFERENCES Country(Id),
 	)
 
 	CREATE TABLE BookDetail(
 		Id int IDENTITY PRIMARY KEY NOT NULL,
-		[Path] varchar(2000),
-		[Filename] varchar(2000),
+		[Path] varchar(100) NOT NULL,
+		[Filename] varchar(1700) UNIQUE NOT NULL,
 		DateAdded Date,
-		ContentType varchar(10)
+		ContentType varchar(50)
 	)
 
 	CREATE TABLE Book(
@@ -147,9 +137,9 @@ BEGIN
 		GenreId int FOREIGN KEY REFERENCES Genre(Id),
 		LanguageId int FOREIGN KEY REFERENCES [Language](Id),
 		CountryId int FOREIGN KEY REFERENCES Country(Id),
-		Title varchar(255) NULL,
-		PublishDate DATE NULL,
-		AddedDate DATE NULL,
+		Title varchar(255) UNIQUE NOT NULL,
+		PublishDate DATE NOT NULL,
+		AddedDate DATE NOT NULL,
 		Price float NULL,
 		[Description] varchar(2000) NULL,
 		BookDetailId int FOREIGN KEY REFERENCES BookDetail(Id) ON DELETE CASCADE,
@@ -188,6 +178,12 @@ BEGIN
 	GRANT INSERT ON "dbo"."Customer" TO AdminUser
 	GRANT INSERT ON "dbo"."Order" TO AdminUser
 	GRANT INSERT ON "dbo"."OrderItem" TO AdminUser
+	GRANT INSERT ON "dbo"."Book" TO AdminUser
+	GRANT INSERT ON "dbo"."BookDetail" TO AdminUser
+	GRANT INSERT ON "dbo"."Language" TO AdminUser
+	GRANT INSERT ON "dbo"."Genre" TO AdminUser
+	GRANT INSERT ON "dbo"."Publisher" TO AdminUser
+	GRANT INSERT ON "dbo"."Author" TO AdminUser
 
 	--Update permissions
 	GRANT UPDATE ON "dbo"."Customer" TO AdminUser
@@ -222,11 +218,11 @@ BEGIN
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('G.R.R', 'Martin', @countryId )
 		INSERT INTO Author (Firstname, Lastname, CountryId) VALUES ('J.K', 'Rowling', @countryId )
 
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
-		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock.pdf', GETDATE(), '.pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock1.pdf', GETDATE(), 'application/pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock2.pdf', GETDATE(), 'application/pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock3.pdf', GETDATE(), 'application/pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock4.pdf', GETDATE(), 'application/pdf');
+		INSERT INTO BookDetail ([Path], [Filename], DateAdded, ContentType) VALUES ('./book_pdf/', 'mock5.pdf', GETDATE(), 'application/pdf');
 
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (1, 1, 1, 1, @countryId , 'The Lord of the Rings', '1954-07-29', 59.99, GETDATE(), 'The Lord of the Rings is the saga of a group of sometimes reluctant heroes who set forth to save their world from consummate evil.', 1, 0.24)
 		INSERT INTO Book (PublisherId, AuthorId, GenreId, LanguageId, CountryId, Title, PublishDate, Price, AddedDate, [Description], BookDetailId, CountrySpecificInfo) VALUES (2, 2, 1, 1, @countryId , 'A Game of Thrones', '1996-08-01', 29.99, GETDATE(), 'Several noble houses of continent called Westeros fight a civil war over who should be king, while an exiled princess across the Narrow tries to find her place in the world, and the kingdom is threatened by some rising supernatural threat from the north.', 2, 0.24)
@@ -266,15 +262,15 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveSweden.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
@@ -479,15 +475,15 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address] FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate, [Address], isAdmin FROM DataIntensiveFinland.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
@@ -690,15 +686,15 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 		IF NOT EXISTS(SELECT 1 FROM DataIntensiveGlobal.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin FROM DataIntensiveNorway.[dbo].Customer ORDER BY Id DESC ;
 	END;
 END;	
 GO
@@ -892,15 +888,15 @@ BEGIN
 	
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveNorway.[dbo].Customer WHERE Id = @customerId)
 	BEGIN	
-		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveNorway.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveFinland.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])   SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROM DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin)   SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin FROM DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	IF NOT EXISTS(SELECT 1 FROM DataIntensiveSweden.[dbo].Customer WHERE Id = @customerId)
 	BEGIN
-		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address])  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address] FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
+		INSERT INTO DataIntensiveSweden.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin)  SELECT TOP 1 Firstname, Lastname, Email, [Password], CreatedDate,  [Address],isAdmin FROm DataIntensiveGlobal.[dbo].Customer ORDER BY Id DESC ;
 	END;
 	RETURN
 END	
@@ -1077,6 +1073,7 @@ GO
 	* Insert rest of the values to every table
 
 */
+INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address], isAdmin) VALUES ('admin', 'admin', 'admin@admin.com','$2b$10$Wj8tBSPxHV7cpbcFdTOQkul29TlzZ4mUWuZzrH2wf196s1nzlJRDO', GETDATE(),  'admin street', 1) 
 INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Frodo', 'Baggins', 'dsfsdffsdfsdf.baggins@email.com','OneRing1234', GETDATE(),  'Bagshot Row, Bag End') 
 INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Harry', 'Potter', 'harry.potter@email.com','TheOneWhoLived', GETDATE(),  '4 Privet Drive, Surrey') 
 INSERT INTO DataIntensiveGlobal.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate,  [Address]) VALUES ('Jon', 'Snow', 'jon.snow@email.com','IKnowNothing', GETDATE(),  'Castle Black, Room 1') 
@@ -1114,64 +1111,3 @@ INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, Co
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
-
---------------------------------
---USE [DataIntensiveSweden]
---GO
-
---UPDATE [dbo].[Customer]
---   SET [Firstname] = 'KAKKA'
---      ,[Lastname] = 'JUööe'
---      ,[Email] = 'sdjkfdfgdfgdfgdfgdfgdfdfgdfgfgddfgdfdffgdfgdfgdnbsd'
---      ,[Password] = 'kisdhfjksdfs'
-	  
--- WHERE Id = 1
---GO
-
---DECLARE @lastCustomerId int;
---	SET @lastCustomerId = (SELECT TOP 1 Id
---	FROM DataIntensiveSweden.[dbo].Customer 
---	ORDER BY LastUpdatedBy DESC);
---UPDATE DataIntensiveFinland.[dbo].Customer 
---	SET 
---		Firstname =Sweden.Firstname, 
---		Lastname = Sweden.Lastname, 
---		Email = 'sdfsdfsd', 
---		[Password] = Sweden.[Password], 
---		CreatedDate = Sweden.CreatedDate, 
---		LastUpdatedBy = Sweden.LastUpdatedBy, 
---		[Address] = Sweden.[Address] 
---	FROM
---		DataIntensiveSweden.[dbo].Customer AS Sweden
---	WHERE 
---		Sweden.Id = @lastCustomerId
-
---DELETE FROM DataIntensiveSweden.[dbo].Customer where Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
-
---DELETE FROM DataIntensiveGlobal.[dbo].Customer where Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].[Order]
---select * from DataIntensiveNorway.[dbo].OrderItem
-
-
-
---UPDATE  DataIntensiveSweden.[dbo].Customer SET Firstname = 'asdfasdf', Password = 'asdfasdfasdfasdf' WHERE Id = 1
---select * from DataIntensiveSweden.[dbo].Customer
---select * from DataIntensiveFinland.[dbo].Customer
---select * from DataIntensiveNorway.[dbo].Customer
---select * from DataIntensiveGlobal.[dbo].Customer
-
-
---INSERT INTO DataIntensiveFinland.[dbo].Customer (Firstname, Lastname, Email, [Password], CreatedDate, LastUpdatedBy, [Address]) VALUES ('sss', 'Snosssw', 'jon.snow@esssmail.com','IKnowNsssothing', GETDATE(), GETDATE(), 'Castle Black, Room 1') 
---select * from DataIntensiveFinland.[dbo].Book inner join DataIntensiveFinland.[dbo].BookDetail  on DataIntensiveFinland.[dbo].BookDetail.Id = DataIntensiveFinland.[dbo].Book.BookDetailId
-select * from DataIntensiveFinland.[dbo].BookDetail 
-
-SELECT
-    [Filename], [Path]
-    FROM DataIntensiveFinland.[dbo].BookDetail
-    WHERE Id = 1

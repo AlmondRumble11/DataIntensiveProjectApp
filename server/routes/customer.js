@@ -10,33 +10,33 @@ const jwt = require('jsonwebtoken');
 const authenticateToken = require('../config/passport').authenticateToken;
 
 function checkResultLogin(req, res, data) {
-  if (data === null) {
-    return res.status(500).json({message: "Internal error."});
-  }
-  if (!data || data.length <= 0) {
-    return res.status(404).json({message: "User not found."});
-  }
-  if (req.body.password == null || data[0].Password == null){
-    return res.status(500).json({message: "Password not found."});
-  }
-  if (bcrypt.compareSync(req.body.password, data[0].Password)) {
-    const token = signJwt(data);
-    delete data[0]['Password'];
-    data[0]['token'] = token;
-    const dataSent = data[0]
-    return res.status(200).json(dataSent);
-  } else {
-    return res.status(401).json({message: "Invalid credentials"});
-  }
+    if (data === null) {
+        return res.status(500).json({ message: "Internal error." });
+    }
+    if (!data || data.length <= 0) {
+        return res.status(404).json({ message: "User not found." });
+    }
+    if (req.body.password == null || data[0].Password == null) {
+        return res.status(500).json({ message: "Password not found." });
+    }
+    if (bcrypt.compareSync(req.body.password, data[0].Password)) {
+        const token = signJwt(data);
+        delete data[0]['Password'];
+        data[0]['token'] = token;
+        const dataSent = data[0]
+        return res.status(200).json(dataSent);
+    } else {
+        return res.status(401).json({ message: "Invalid credentials" });
+    }
 }
 
-function signJwt(data){
-  const jwtPayload = {
-    id: data[0].Id,
-    email: data[0].Email
-  }
-  const token = jwt.sign(jwtPayload, process.env.ACCESS_SECRET, {expiresIn: "1h"});
-  return token;
+function signJwt(data) {
+    const jwtPayload = {
+        id: data[0].Id,
+        email: data[0].Email
+    }
+    const token = jwt.sign(jwtPayload, process.env.ACCESS_SECRET, { expiresIn: "1h" });
+    return token;
 }
 
 
@@ -49,35 +49,35 @@ function checkCustomerBody(req, res) {
         .has().digits()
         .has().symbols()
 
-  if(req.body.firstName == null || req.body.firstName === ''){
-    return res.status(422).json({message: "No first name"});
-  }else if (req.body.lastName == null || req.body.lastName === ''){
-    return res.status(422).json({message: "No lastname"});
-  }else if (req.body.address == null || req.body.address === ''){
-    return res.status(422).json({message: "No address"});
-  }else if (typeof req.body.email !== 'string' || !IsEmail.validate(req.body.email)){
-    return res.status(401).json({message: "Invalid email"});
-  }else if (req.body.password == null || !schema.validate(req.body.password)){ //!TODO voi lisää !schema.validate(req.body.passowrd, {list: true}) ni listaa errorit
-    return res.status(401).json({message: "Invalid password"});
-  }
-  return 1;
+    if (req.body.firstName == null || req.body.firstName === '') {
+        return res.status(422).json({ message: "No first name" });
+    } else if (req.body.lastName == null || req.body.lastName === '') {
+        return res.status(422).json({ message: "No lastname" });
+    } else if (req.body.address == null || req.body.address === '') {
+        return res.status(422).json({ message: "No address" });
+    } else if (typeof req.body.email !== 'string' || !IsEmail.validate(req.body.email)) {
+        return res.status(401).json({ message: "Invalid email" });
+    } else if (req.body.password == null || !schema.validate(req.body.password)) { //!TODO voi lisää !schema.validate(req.body.passowrd, {list: true}) ni listaa errorit
+        return res.status(401).json({ message: "Invalid password" });
+    }
+    return 1;
 }
 
 function checkResultProfile(req, res, data) {
-  if (data === null) {
-    return res.status(500).send({message: "Internal error."});
-  }
+    if (data === null) {
+        return res.status(500).send({ message: "Internal error." });
+    }
 
-  if (!data || data.length <= 0) {
-    return res.status(404).send({message: "Not found."});
-  }
+    if (!data || data.length <= 0) {
+        return res.status(404).send({ message: "Not found." });
+    }
 
-  return res.status(200).json(data);
+    return res.status(200).json(data);
 }
 
-router.post('/login', async  (req, res) =>  {
+router.post('/login', async(req, res) => {
 
-  const query = `
+    const query = `
   select
   C.Id, C.Firstname, C.Lastname, C.Email, C.Password, C.Address
   from Customer as C
@@ -85,10 +85,10 @@ router.post('/login', async  (req, res) =>  {
 
     const result = await sqlQuery(query, req.headers.countrycode);
 
-  return checkResultLogin(req, res, result);  
+    return checkResultLogin(req, res, result);
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', async(req, res) => {
 
   const query = `
   select 1
@@ -99,10 +99,9 @@ router.post('/register', async (req, res) => {
     const resultQuery = await sqlQuery(query, req.headers.countrycode);
     if( resultQuery.length < 1){
 
-      const salt = bcrypt.genSaltSync(10);
-      const hash = bcrypt.hashSync(req.body.password, salt);
-
-      const insertQuery = `
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(req.body.password, salt);
+            const insertQuery = `
       INSERT INTO Customer ( 
         Firstname, 
         Lastname, 
@@ -120,27 +119,27 @@ router.post('/register', async (req, res) => {
 
       const resultInsert = await sqlInsert(insertQuery, req.headers.countrycode);
 
-      if (resultInsert === null) {
-        return res.status(500).json({message: "Internal error"});
-      }else {
-        return res.status(201).json(resultInsert);
-      }
-    }else {
-      return res.status(409).json({message: "Email already in use"});
+            if (resultInsert === null) {
+                return res.status(500).json({ message: "Internal error" });
+            } else {
+                return res.status(201).json(resultInsert);
+            }
+        } else {
+            return res.status(409).json({ message: "Email already in use" });
+        }
     }
-  }  
 });
 
-router.get('/test', authenticateToken , async (req, res) => {
-  console.log(req.user)
-  return res.status(201).send("ok");
+router.get('/test', authenticateToken, async(req, res) => {
+    console.log(req.user)
+    return res.status(201).send("ok");
 });
 
-router.get('/profile', authenticateToken , async (req, res) => {
-  
-  const query = `
+router.get('/profile', authenticateToken, async(req, res) => {
+
+    const query = `
     SELECT
-    C.Id, C.Firstname, C.Lastname, C.Address, C.Email, C.CreatedDate
+    C.Id, C.Firstname, C.Lastname, C.Address, C.Email, C.CreatedDate, C.isAdmin
     FROM Customer as C
     WHERE C.Id = ${req.user.id}
   `;
@@ -151,9 +150,9 @@ router.get('/profile', authenticateToken , async (req, res) => {
 });
 
 
-router.get('/books', authenticateToken , async (req, res) => {
- 
-  const query = `
+router.get('/books', authenticateToken, async(req, res) => {
+
+    const query = `
     select
     O.Id as OrderId,
     OI.Id as OrderItemId,
@@ -172,7 +171,7 @@ router.get('/books', authenticateToken , async (req, res) => {
   
   const result = await sqlQuery(query, req.headers.countrycode);
 
-  return checkResultProfile(req, res, result);
+    return checkResultProfile(req, res, result);
 });
 
 
