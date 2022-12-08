@@ -1,4 +1,5 @@
 var express = require("express");
+const { authenticateToken } = require("../config/passport");
 var router = express.Router();
 var { sqlQuery, sqlInsert } = require("../database");
 
@@ -110,21 +111,44 @@ router.get("/search/:searchTerm", async function(req, res) {
 
     return getResultSearch(res, result);
 });
-
-// !TODO This route should be protected, atm anyone can download books 
-router.get("/dowload/:id", async function(req, res) {
+ 
+router.get("/download/:id", authenticateToken, async function(req, res) {
     const bookId = req.params.id;
-    const result = await sqlQuery(`
-    SELECT
-    Filename, Path, ContentType
-    FROM BookDetail
-    WHERE Id = ${bookId}`, req.headers.countrycode);
+    const userId = req.user.id;
 
-    const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
-    const fileName = result[0]["Filename"];
-    return res.download(filePath, fileName);
+    const queryCheckCustomerInventory = `
+    select
+    O.Id as OrderId,
+    OI.Id as OrderItemId,
+    B.Id as BookId, B.Title, B.Description, B.Price, B.PublishDate
+    from [Order] as O
+    inner join OrderItem as OI on O.Id = OI.OrderId
+    inner join Book as B on OI.BookId = B.Id
+    where O.CustomerId = ${userId}
+    `;
+
+    const customerInventory = await sqlQuery(queryCheckCustomerInventory, req.headers.countrycode);
+    
+    for (let i = 0; i < customerInventory.length; i++) {
+        const orderItem = customerInventory[i];
+        if(orderItem.OrderItemId == bookId){
+
+            const result = await sqlQuery(`
+            SELECT
+            Filename, Path, ContentType
+            FROM BookDetail
+            WHERE Id = ${bookId}`, req.headers.countrycode);
+        
+            const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
+            const fileName = result[0]["Filename"];
+            return res.download(filePath, fileName);
+        }
+    }
+
+    return res.status(404).json({ message: "Book not found from user's orders" });
 
 });
+
 
 async function getBook(title, countrycode) {
     return await sqlQuery(`

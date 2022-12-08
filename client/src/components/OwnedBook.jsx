@@ -12,12 +12,15 @@ import {useTranslation} from 'react-i18next';
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function OwnedBook({book}) {
 
+    var jwt = sessionStorage.getItem('token');
+
     // Source for downloading a file:  https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
     const DownloadBook = () => {
-        fetch(`http://localhost:3001/book/dowload/${book.BookId}`, {
+        fetch(`http://localhost:3001/book/download/${book.BookId}`, {
             method: 'GET',
             mode: 'cors',
             headers: {
+                'Authorization': `Bearer ${jwt}`,
                 'countrycode': sessionStorage.getItem('countryCode')
             }
         }).then((res) => res.blob())
