@@ -169,7 +169,7 @@ router.get('/books', authenticateToken, async(req, res) => {
     where O.CustomerId = ${req.user.id}
   `;
   
-  const result = await sqlQuery(query, req.headers.countrycode);
+    const result = await sqlQuery(query, req.headers.countrycode);
 
     return checkResultProfile(req, res, result);
 });

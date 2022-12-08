@@ -14,7 +14,7 @@ function OwnedBook({book}) {
 
     // Source for downloading a file:  https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
     const DownloadBook = () => {
-        fetch(`http://localhost:3001/book/dowload/${book.Id}`, {
+        fetch(`http://localhost:3001/book/dowload/${book.BookId}`, {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -40,8 +40,14 @@ function OwnedBook({book}) {
                     <Typography align='left' variant="h4" component="div">
                         {book.Title}
                     </Typography>
+                    <Typography align='left'  color="text.secondary">
+                        {book.FirstName} {book.LastName}
+                    </Typography>
                     <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
-                        {book.AuthorId}
+                        {book.Genre}
+                    </Typography>
+                    <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
+                        {book.Description}
                     </Typography>
             <Stack direction="row" justifyContent="end">
                 <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<DownloadIcon />} onClick={DownloadBook}>{t('Download PDF')}</Button>
