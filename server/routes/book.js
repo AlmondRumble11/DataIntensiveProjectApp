@@ -1,10 +1,6 @@
 var express = require("express");
 var router = express.Router();
 var { sqlQuery, sqlInsert } = require("../database");
-const path = require('node:path');
-const mime = require('mime');
-const parse = require('date-fns');
-
 
 function getResult(res, data) {
     if (data === null) {
@@ -186,6 +182,7 @@ router.post("/addbook", async function(req, res) {
     }
 
     //Check if book exist
+    console.log(formValues["title"], req.headers.countrycode);
     const result = await getBook(formValues["title"], req.headers.countrycode);
     if (result.length != 0) {
         return res.status(502).json("Book exists.")
