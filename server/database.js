@@ -52,7 +52,6 @@ function selectConfig(countryCode){
 async function sqlQuery(query, countryCode) {
     try {
         const config = selectConfig(countryCode);
-        console.log(config);
         if(config === null){
             return null
         }else {

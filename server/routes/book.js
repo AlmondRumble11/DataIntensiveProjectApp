@@ -115,6 +115,7 @@ router.get("/search/:searchTerm", async function(req, res) {
     return getResultSearch(res, result);
 });
 
+// !TODO This route should be protected, atm anyone can download books 
 router.get("/dowload/:id", async function(req, res) {
     const bookId = req.params.id;
     const result = await sqlQuery(`
@@ -170,7 +171,7 @@ async function getGenre(name, countrycode) {
     WHERE [Name] = '${name}'`, countrycode);
 }
 
-
+// !TODO This route should be protected, atm anyone can add books 
 router.post("/addbook", async function(req, res) {
     const formValues = JSON.parse(req.body.formValues);
     const file = req.files.file;
