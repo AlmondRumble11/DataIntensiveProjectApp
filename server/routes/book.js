@@ -208,10 +208,9 @@ router.post("/addbook", authenticateToken,async function(req, res) {
     }
 
     //Check if book exist
-    console.log(formValues["title"], req.headers.countrycode);
     const result = await getBook(formValues["title"], req.headers.countrycode);
     if (result.length != 0) {
-        return res.status(502).json("Book exists.")
+        return res.status(502).json({msg: "Book exists.", status: false})
     }
     if (Number(isNaN(formValues["price"]))) {
         return res.status(503).send({
@@ -353,7 +352,7 @@ router.post("/addbook", authenticateToken,async function(req, res) {
             if (err) throw err;
         });
     } catch (e) {
-        return res.status(500).json({ msg: "A problem occured.", status: true });
+        return res.status(500).json({ msg: "A problem occured.", status: false });
     }
     return res.status(200).json({ msg: "Book was added.", status: true });
 

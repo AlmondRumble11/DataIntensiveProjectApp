@@ -15,14 +15,17 @@ module.exports = {
             if (err){
                 return res.status(403).send({message: 'Forbidden access'});
             } else{
-                req.user = {
-                    id: jwtPayload.id,
-                    email: jwtPayload.email,
-                    isAdmin: false
-                };
                 if(jwtPayload.email == adminEmail){
                     req.user = {
-                        isAdmin: true
+                        isAdmin: true,
+                        id: jwtPayload.id,
+                        email: jwtPayload.email
+                    };
+                }else{
+                    req.user = {
+                        isAdmin: false,
+                        id: jwtPayload.id,
+                        email: jwtPayload.email
                     };
                 }
                 next();

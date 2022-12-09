@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import AddBookField from './AddBookField';
 
 export default function AddBookDialog(props) {
-    const { onClose, open, setSuccess } = props;
+    const { onClose, open, setSuccessAddBooks, setErrorAddBooks } = props;
     const initialState = {
         title: null,
         authorFirstname: null,
@@ -39,7 +39,11 @@ export default function AddBookDialog(props) {
         }).then(res => {
             res.json().then(data => {
                 console.log(data);
-                setSuccess(data.status);
+                if(data.status){
+                    setSuccessAddBooks(true);
+                }else if(!data.status){
+                    setErrorAddBooks(true);
+                }   
             });
             
            
