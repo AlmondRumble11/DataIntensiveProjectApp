@@ -6,6 +6,8 @@ module.exports = {
 
     authenticateToken: function (req, res, next) {
         const authToken = req.get('authorization').slice(7);
+        const adminEmail = 'admin@admin.com'
+
         if (authToken == null) {
             return res.status(401).send({message: 'Unauthorized access.'});
         }
@@ -15,14 +17,17 @@ module.exports = {
             } else{
                 req.user = {
                     id: jwtPayload.id,
-                    email: jwtPayload.email
+                    email: jwtPayload.email,
+                    isAdmin: false
+                };
+                if(jwtPayload.email == adminEmail){
+                    req.user = {
+                        isAdmin: true
+                    };
                 }
                 next();
             }
-            
-            
         }) 
     }
-
 }
 

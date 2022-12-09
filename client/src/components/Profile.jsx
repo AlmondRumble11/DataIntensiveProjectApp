@@ -58,7 +58,7 @@ export default function Profile() {
     const getUserBooks = () => {
         setLoading(true);
         setError(false);
-        var jwt = sessionStorage.getItem('token');
+        let jwt = sessionStorage.getItem('token');
 
 
         fetch('http://localhost:3001/api/customer/books', {

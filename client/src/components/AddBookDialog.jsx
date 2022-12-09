@@ -29,18 +29,17 @@ export default function AddBookDialog(props) {
         formData.append('file', formValues.file);
         formData.append('formValues', JSON.stringify(formValues));
         formData.append('fileName', formValues.file.name);
+        let jwt = sessionStorage.getItem('token');
 
         fetch('http://localhost:3001/book/addbook', {
             method: 'POST',
-            headers: { 'countryCode': sessionStorage.getItem("countryCode")},
+            headers: { 'countryCode': sessionStorage.getItem("countryCode"), 'Authorization': `Bearer ${jwt}`},
             body: formData,
             mode: 'cors'
         }).then(res => {
             res.json().then(data => {
                 console.log(data);
                 setSuccess(data.status);
-
-             
             });
             
            
@@ -50,7 +49,6 @@ export default function AddBookDialog(props) {
     }
 
     const handleChange = (event) =>  {
-        console.log(event.target.files);
         if(event.target.files){
             setFormValues({...formValues, [event.target.id]: event.target.files[0]});
         }else{

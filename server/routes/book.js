@@ -191,8 +191,7 @@ async function getGenre(name, countrycode) {
     WHERE [Name] = '${name}'`, countrycode);
 }
 
-// !TODO This route should be protected, atm anyone can add books 
-router.post("/addbook", async function(req, res) {
+router.post("/addbook", authenticateToken,async function(req, res) {
     const formValues = JSON.parse(req.body.formValues);
     const file = req.files.file;
     let authtorId;
@@ -200,6 +199,9 @@ router.post("/addbook", async function(req, res) {
     let languageId;
     let genreId;
 
+    if(!req.user.isAdmin){
+        return res.status(403).json({msg: 'Only admin can add books', status: false})
+    }
 
     if (req.files.file.mimetype != "application/pdf") {
         return res.status(501).json({ msg: "Only supports .pdf files", status: false });
