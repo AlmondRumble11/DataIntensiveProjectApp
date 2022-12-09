@@ -57,7 +57,7 @@ async function sqlQuery(query, countryCode) {
         }else {
             await sql.connect(config);
             const result = await sql.query(query);
-            sql.close();
+            await sql.close();
             if (result) {
                 return result.recordset;
             }

@@ -1,4 +1,5 @@
 var express = require("express");
+const { authenticateToken } = require("../config/passport");
 var router = express.Router();
 var { sqlQuery, sqlInsert } = require("../database");
 
@@ -110,21 +111,44 @@ router.get("/search/:searchTerm", async function(req, res) {
 
     return getResultSearch(res, result);
 });
-
-// !TODO This route should be protected, atm anyone can download books 
-router.get("/dowload/:id", async function(req, res) {
+ 
+router.get("/download/:id", authenticateToken, async function(req, res) {
     const bookId = req.params.id;
-    const result = await sqlQuery(`
-    SELECT
-    Filename, Path, ContentType
-    FROM BookDetail
-    WHERE Id = ${bookId}`, req.headers.countrycode);
+    const userId = req.user.id;
 
-    const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
-    const fileName = result[0]["Filename"];
-    return res.download(filePath, fileName);
+    const queryCheckCustomerInventory = `
+    select
+    O.Id as OrderId,
+    OI.Id as OrderItemId,
+    B.Id as BookId, B.Title, B.Description, B.Price, B.PublishDate
+    from [Order] as O
+    inner join OrderItem as OI on O.Id = OI.OrderId
+    inner join Book as B on OI.BookId = B.Id
+    where O.CustomerId = ${userId}
+    `;
+
+    const customerInventory = await sqlQuery(queryCheckCustomerInventory, req.headers.countrycode);
+    
+    for (let i = 0; i < customerInventory.length; i++) {
+        const orderItem = customerInventory[i];
+        if(orderItem.OrderItemId == bookId){
+
+            const result = await sqlQuery(`
+            SELECT
+            Filename, Path, ContentType
+            FROM BookDetail
+            WHERE Id = ${bookId}`, req.headers.countrycode);
+        
+            const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
+            const fileName = result[0]["Filename"];
+            return res.download(filePath, fileName);
+        }
+    }
+
+    return res.status(404).json({ message: "Book not found from user's orders" });
 
 });
+
 
 async function getBook(title, countrycode) {
     return await sqlQuery(`
@@ -167,8 +191,7 @@ async function getGenre(name, countrycode) {
     WHERE [Name] = '${name}'`, countrycode);
 }
 
-// !TODO This route should be protected, atm anyone can add books 
-router.post("/addbook", async function(req, res) {
+router.post("/addbook", authenticateToken,async function(req, res) {
     const formValues = JSON.parse(req.body.formValues);
     const file = req.files.file;
     let authtorId;
@@ -176,16 +199,18 @@ router.post("/addbook", async function(req, res) {
     let languageId;
     let genreId;
 
+    if(!req.user.isAdmin){
+        return res.status(403).json({msg: 'Only admin can add books', status: false})
+    }
 
     if (req.files.file.mimetype != "application/pdf") {
         return res.status(501).json({ msg: "Only supports .pdf files", status: false });
     }
 
     //Check if book exist
-    console.log(formValues["title"], req.headers.countrycode);
     const result = await getBook(formValues["title"], req.headers.countrycode);
     if (result.length != 0) {
-        return res.status(502).json("Book exists.")
+        return res.status(502).json({msg: "Book exists.", status: false})
     }
     if (Number(isNaN(formValues["price"]))) {
         return res.status(503).send({
@@ -327,7 +352,7 @@ router.post("/addbook", async function(req, res) {
             if (err) throw err;
         });
     } catch (e) {
-        return res.status(500).json({ msg: "A problem occured.", status: true });
+        return res.status(500).json({ msg: "A problem occured.", status: false });
     }
     return res.status(200).json({ msg: "Book was added.", status: true });
 

@@ -31,8 +31,6 @@ export const SelectLocation = () => {
 			let ltd = position.coords.latitude;
 			let lng = position.coords.longitude;
 			let isCountrySupported = false
-			console.log(ltd,lng);
-			// * The api key must be set to the env variables before running react
 			const locationApiUrl = `
 			https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${ltd}&longitude=${lng}
 			`
@@ -40,7 +38,6 @@ export const SelectLocation = () => {
 			.then(res => res.json())
 			.then(data => {
 				supportedCountries.forEach(country => {
-					console.log(data.countryCode);
 					if(country.code === data.countryCode){
 						sessionStorage.setItem('countryCode', data.countryCode);
 						isCountrySupported = true

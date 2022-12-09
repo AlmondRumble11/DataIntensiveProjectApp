@@ -10,7 +10,8 @@ export default function Profile() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [open, setOpen] = React.useState(false);
-    const [success, setSuccess] = useState(false);
+    const [successAddBooks, setSuccessAddBooks] = useState(false);
+    const [errorAddBooks, setErrorAddBooks] = useState(false);
     const [books, setBooks] = useState([]);
     const { t } = useTranslation(['i18n']);
 
@@ -58,7 +59,7 @@ export default function Profile() {
     const getUserBooks = () => {
         setLoading(true);
         setError(false);
-        var jwt = sessionStorage.getItem('token');
+        let jwt = sessionStorage.getItem('token');
 
 
         fetch('http://localhost:3001/api/customer/books', {
@@ -109,18 +110,25 @@ export default function Profile() {
 
     return (
         <div>
-            <Box>
-            {success && <Alert severity="error">
+            <Box  display="flex" justifyContent="center">
+            {errorAddBooks && 
+            <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
                 This is an error alert — <strong>check it out!</strong>
-                <Button onClick={() => setSuccess(false)}>Close</Button>
-                </Alert>}
+                <Button onClick={() => setErrorAddBooks(false)}>Close</Button>
+            </Alert>}
+            {successAddBooks && 
+            <Alert severity="success">
+                <AlertTitle>Success</AlertTitle>
+                Adding the book was successful
+                <Button onClick={() => setSuccessAddBooks(false)}>Close</Button>
+            </Alert>}
             </Box>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>
             </Box>
-            { user[0]?.isAdmin != null && <Button variant="outlined" onClick={setModalState}>Add new book</Button>}
-            <AddBookDialog open={open} onClose={handleClose} setSuccess={setSuccess}></AddBookDialog>
+            { user[0]?.isAdmin != null && <Button sx={{mb: '0.5rem'}} variant="outlined" onClick={setModalState}>Add new book</Button>}
+            <AddBookDialog open={open} onClose={handleClose} setSuccessAddBooks={setSuccessAddBooks} setErrorAddBooks={setErrorAddBooks}></AddBookDialog>
             {[...user].map((user) => (
                 <UserDetails key={user.Id} user={user} />
             ))}
