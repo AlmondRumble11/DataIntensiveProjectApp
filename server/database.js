@@ -79,7 +79,7 @@ async function sqlInsert(query, countryCode) {
             return null
         }else{
             const pool = await sql.connect(config);
-            const result = await pool.request().query(query)
+            const result = await pool.request().query(query);
             if (result) {
                 return result;
             }
