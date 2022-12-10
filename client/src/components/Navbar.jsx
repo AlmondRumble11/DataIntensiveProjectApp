@@ -170,9 +170,9 @@ const ResponsiveAppBar = () => {
                             {isCountrySelected && <MenuItem component={RouterLink} to='/' color="inherit" style={{ padding: '10px' }}>
                                 {t('Home')}
                             </MenuItem>}
-                            <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{ padding: '10px' }}>
+                            {isCountrySelected && <MenuItem component={RouterLink} to='/allbooks' color="inherit" style={{ padding: '10px' }}>
                                 {t('All books')}
-                            </MenuItem>
+                            </MenuItem>}
                             {!isLoggedIn && isCountrySelected && <MenuItem component={RouterLink} to='/login' color="inherit" style={{ padding: '10px' }}>
                                 {t('Login')}
                             </MenuItem>}
