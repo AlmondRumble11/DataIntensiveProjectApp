@@ -121,3 +121,5 @@ dist
 
 #env files
 server/.env
+
+.env
