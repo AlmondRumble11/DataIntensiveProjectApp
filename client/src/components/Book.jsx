@@ -36,11 +36,11 @@ function Book({ book }) {
                 <Typography align='left' variant="h4" component="div"  onClick={setModalState}>
                     {book.Title}
                 </Typography>
-                <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
+                <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary" onClick={setModalState}>
                     {book.FirstName} {book.LastName}
                 </Typography>
                 <Stack direction="row" justifyContent="space-between" spacing={5}>
-                    <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
+                    <Typography onClick={setModalState} align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
                         {book.Description}
                     </Typography>
                     <Button  sx={{ maxWidth: '110px', maxHeight: '40px', minWidth: '110px', minHeight: '40px'}}  size="medium" variant="contained" startIcon={<ShoppingCartIcon />} onClick={() => addBookToShoppingCart()}>{book.Price}€</Button>

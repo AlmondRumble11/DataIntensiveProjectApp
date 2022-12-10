@@ -29,20 +29,24 @@ function getResultSearch(res, data) {
 
 router.get("/all", async function(req, res) {
     const result = await sqlQuery(`select 
-    B.Id, B.Title, B.Description, B.Price,
-    A.FirstName, A.LastName
+    B.Id, B.Title, B.Description, B.Price, B.PublishDate,
+    A.FirstName, A.LastName, L.Name as LanguageName, G.Name as GenreName
     from Book as B
     inner join Author as A on B.authorId = A.Id
+    inner join Language as L on B.LanguageId = L.Id
+    inner join Genre as G on B.GenreId = G.Id
     `, req.headers.countrycode);
     return getResult(res, result);
 });
 
 router.get("/featured", async function(req, res) {
     const result = await sqlQuery(`select 
-  B.Id, B.Title, B.Description, B.Price,
-  A.FirstName, A.LastName
+  B.Id, B.Title, B.Description, B.Price, B.PublishDate,
+  A.FirstName, A.LastName, L.Name as LanguageName, G.Name as GenreName
   from Book as B
   inner join Author as A on B.authorId = A.Id
+  inner join Language as L on B.languageId = L.Id
+  inner join Genre as G on B.genreId = G.Id
   order by addedDate desc
   `, req.headers.countrycode);
     return getResult(res, result);
@@ -59,8 +63,8 @@ router.get("/id/:id", async function(req, res) {
   L.Name as Language
   from Book as B
   inner join Author as A on B.authorId = A.Id
-  inner join Language as L on B.languageId = L.Id
-  inner join Genre as G on B.genreId = G.Id
+  inner join Language as L on B.LanguageId = L.Id
+  inner join Genre as G on B.GenreId = G.Id
   where B.Id = ${bookId}`, req.headers.countrycode);
 
     return getResult(res, result);

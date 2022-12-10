@@ -1,8 +1,10 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Alert, AlertTitle} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import React, { useState, useEffect } from 'react'
 import AddBookField from './AddBookField';
+import { useTranslation } from 'react-i18next';
 
 export default function AddBookDialog(props) {
+    const { t } = useTranslation(['i18n']);   
     const { onClose, open, setSuccessAddBooks, setErrorAddBooks } = props;
     const initialState = {
         title: null,
@@ -67,14 +69,14 @@ export default function AddBookDialog(props) {
 
     return (
         <Dialog maxWidth="sm" fullWidth open={open} onClose={handleClose}>
-            <DialogTitle>Add a new book</DialogTitle>
+            <DialogTitle>{t("AddNewBook")}</DialogTitle>
             <form id="add-book-form" sx={8} onSubmit={submitForm} onChange={handleChange}>
                 <DialogContent>
                     <AddBookField setInvalid={setInvalid} invalid={invalid} ></AddBookField>
                 </DialogContent>
                 <DialogActions>
-                    <Button variant='contained' type="submit" id="submit" disabled={invalid}>Submit</Button>
-                    <Button variant='contained' type="submit" id="submit" onClick={handleClose}>Cancel</Button>
+                    <Button variant='contained' type="submit" id="submit" disabled={invalid}>{t("Submit")}</Button>
+                    <Button variant='contained' type="submit" id="submit" onClick={handleClose}>{t("Cancel")}</Button>
                 </DialogActions>
             </form>
         </Dialog>

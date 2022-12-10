@@ -5,6 +5,7 @@ import OwnedBook from './OwnedBook'
 import { Typography, Alert, AlertTitle, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AddBookDialog from './AddBookDialog';
+
 export default function Profile() {
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -113,21 +114,21 @@ export default function Profile() {
             <Box  display="flex" justifyContent="center">
             {errorAddBooks && 
             <Alert severity="error">
-                <AlertTitle>Error</AlertTitle>
-                This is an error alert — <strong>check it out!</strong>
-                <Button onClick={() => setErrorAddBooks(false)}>Close</Button>
+                <AlertTitle>{t("Error")}</AlertTitle>
+                {t("ErrorAlert")} — <strong>{t("CheckItOut")}!</strong>
+                <Button onClick={() => setErrorAddBooks(false)}>{t("Close")}</Button>
             </Alert>}
             {successAddBooks && 
             <Alert severity="success">
-                <AlertTitle>Success</AlertTitle>
-                Adding the book was successful
-                <Button onClick={() => setSuccessAddBooks(false)}>Close</Button>
+                <AlertTitle>{t("Success")}</AlertTitle>
+                {t("AddBookSuccess")}
+                <Button onClick={() => setSuccessAddBooks(false)}>{t("Close")}</Button>
             </Alert>}
             </Box>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>
             </Box>
-            { user[0]?.isAdmin != null && <Button sx={{mb: '0.5rem'}} variant="outlined" onClick={setModalState}>Add new book</Button>}
+            { user[0]?.isAdmin != null && <Button sx={{mb: '0.5rem'}} variant="outlined" onClick={setModalState}>{t("AddNewBook")}</Button>}
             <AddBookDialog open={open} onClose={handleClose} setSuccessAddBooks={setSuccessAddBooks} setErrorAddBooks={setErrorAddBooks}></AddBookDialog>
             {[...user].map((user) => (
                 <UserDetails key={user.Id} user={user} />
