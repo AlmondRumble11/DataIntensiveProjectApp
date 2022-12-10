@@ -31,7 +31,7 @@ const configs = [
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: "DataIntensiveNorway",
-            server: process.env.DB_SERVER,
+            server: process.env.DB_SERVER, 
             options: {
                 trustServerCertificate: true,
             }
