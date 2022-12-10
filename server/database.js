@@ -31,7 +31,7 @@ const configs = [
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: "DataIntensiveNorway",
-            server: process.env.DB_SERVER,
+            server: process.env.DB_SERVER, 
             options: {
                 trustServerCertificate: true,
             }
@@ -79,7 +79,7 @@ async function sqlInsert(query, countryCode) {
             return null
         }else{
             const pool = await sql.connect(config);
-            const result = await pool.request().query(query)
+            const result = await pool.request().query(query);
             if (result) {
                 return result;
             }

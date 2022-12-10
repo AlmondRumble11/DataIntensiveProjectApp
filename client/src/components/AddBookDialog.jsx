@@ -40,7 +40,6 @@ export default function AddBookDialog(props) {
             mode: 'cors'
         }).then(res => {
             res.json().then(data => {
-                console.log(data);
                 if(data.status){
                     setSuccessAddBooks(true);
                 }else if(!data.status){
