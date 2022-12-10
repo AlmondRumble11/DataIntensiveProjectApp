@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
-import { Typography, Alert, AlertTitle, Button } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AddBookDialog from './AddBookDialog';
+import AlertComponent from './AlertComponent';
 
 export default function Profile() {
     const [addedBookResponse, setAddedBookResponse] = useState(null);
@@ -115,12 +116,7 @@ export default function Profile() {
     return (
         <div>
             <Box  display="flex" justifyContent="center">
-            {addedBookResponse && 
-            <Alert severity={addedBookResponse.severity}>
-                <AlertTitle>{t(addedBookResponse.title)}</AlertTitle>
-                {addedBookResponse.msg}
-                <Button onClick={() => setAddedBookResponse(null)}>{t("Close")}</Button>
-            </Alert>}
+            {addedBookResponse && <AlertComponent response={addedBookResponse} handleClose={handleAddedBookResponse}/>}
             </Box>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>

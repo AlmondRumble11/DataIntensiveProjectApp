@@ -4,7 +4,7 @@ import Book from './Book';
 import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
 import SearchBar from './SearchBar';
-
+import AlertComponent from './AlertComponent';
 
 export default function AllBooks() {
     const [books, setBooks] = useState([]);
@@ -12,6 +12,12 @@ export default function AllBooks() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
     const { t } = useTranslation(['i18n']);
+    const [alertValues, setAlertValues] = useState({
+        msg: "Book was added to cart.",
+        status: true,
+        title: "Success",
+        severity: "success"});
+    const [bookAdded, setBookAdded] = useState(false);
     
     useEffect(() => {
         getAllBooks();
@@ -68,7 +74,9 @@ export default function AllBooks() {
             }
         })
     }
-   
+    const handleAddedBook = (value) => {
+        setBookAdded(value);
+    }
 
     const getAllBooks = () => {
         setLoading(true);
@@ -102,12 +110,13 @@ export default function AllBooks() {
 
     return (
         <div>
+            {bookAdded &&  <AlertComponent response={alertValues} handleClose={handleAddedBook}/>}
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('All books')}</h1>
                 <SearchBar whenChanging={whenChanging} keyPress={keyPress} onClick={searchButtonPress}></SearchBar>
             </Box>
             {books.map((book) => (
-                <Book key={book.Id} book={book} />
+                <Book key={book.Id} book={book} handleAddedBook={handleAddedBook}/>
             ))}
             {!books?.length > 0 && <div>{t('No books')}</div>}
         </div>
