@@ -115,7 +115,7 @@ router.get("/search/:searchTerm", async function(req, res) {
 
     return getResultSearch(res, result);
 });
- 
+
 router.get("/download/:id", authenticateToken, async function(req, res) {
     const bookId = req.params.id;
     const userId = req.user.id;
@@ -132,17 +132,17 @@ router.get("/download/:id", authenticateToken, async function(req, res) {
     `;
 
     const customerInventory = await sqlQuery(queryCheckCustomerInventory, req.headers.countrycode);
-    
+
     for (let i = 0; i < customerInventory.length; i++) {
         const orderItem = customerInventory[i];
-        if(orderItem.OrderItemId == bookId){
+        if (orderItem.OrderItemId == bookId) {
 
             const result = await sqlQuery(`
             SELECT
             Filename, Path, ContentType
             FROM BookDetail
             WHERE Id = ${bookId}`, req.headers.countrycode);
-        
+
             const filePath = `${result[0]["Path"]}${result[0]["Filename"]}`;
             const fileName = result[0]["Filename"];
             return res.download(filePath, fileName);
@@ -195,7 +195,7 @@ async function getGenre(name, countrycode) {
     WHERE [Name] = '${name}'`, countrycode);
 }
 
-router.post("/addbook", authenticateToken,async function(req, res) {
+router.post("/addbook", authenticateToken, async function(req, res) {
     const formValues = JSON.parse(req.body.formValues);
     const file = req.files.file;
     let authtorId;
@@ -203,26 +203,43 @@ router.post("/addbook", authenticateToken,async function(req, res) {
     let languageId;
     let genreId;
 
-    if(!req.user.isAdmin){
-        return res.status(403).json({msg: 'Only admin can add books', status: false})
+    if (!req.user.isAdmin) {
+        return res.status(403).json({
+            msg: 'Only admin can add books',
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
     }
 
     if (req.files.file.mimetype != "application/pdf") {
-        return res.status(501).json({ msg: "Only supports .pdf files", status: false });
+        return res.status(501).json({
+            msg: "Only supports .pdf files",
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
     }
 
     //Check if book exist
     const result = await getBook(formValues["title"], req.headers.countrycode);
     if (result.length != 0) {
-        return res.status(502).json({msg: "Book exists.", status: false})
-    }
-    if (Number(isNaN(formValues["price"]))) {
-        return res.status(503).send({
-            msg: `Given price ${formValues["price"]} is not a number.`,
-            status: false
-        })
+        return res.status(502).json({
+            msg: "Book exists.",
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
     }
 
+    if (isNaN(formValues["price"])) {
+        return res.status(503).send({
+            msg: `Given price ${formValues["price"]} is not a number.`,
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
+    }
 
     //Author query insert if author does not exist
     const authtor = await getAuthor(formValues["authorFirstname"], formValues["authorLastname"], req.headers.countrycode);
@@ -356,9 +373,19 @@ router.post("/addbook", authenticateToken,async function(req, res) {
             if (err) throw err;
         });
     } catch (e) {
-        return res.status(500).json({ msg: "A problem occured.", status: false });
+        return res.status(500).json({
+            msg: "A problem occured.",
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
     }
-    return res.status(200).json({ msg: "Book was added.", status: true });
+    return res.status(200).json({
+        msg: "Book was added.",
+        status: true,
+        title: "Success",
+        severity: "success"
+    });
 
 });
 

@@ -42,7 +42,6 @@ function Login() {
             }else if(res.status !== 201){
                 res.json().then(data => {
                     setErr(data.message)
-                    console.log(data.message);
                 })
             }
             else{

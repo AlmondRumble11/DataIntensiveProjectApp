@@ -57,7 +57,6 @@ export default function AllBooks() {
             } else if (res.status !== 201) {
                 res.json().then(data => {
                     setError(data.message)
-                    console.log(error);
                 })
             }
             else {

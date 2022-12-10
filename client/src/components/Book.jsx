@@ -12,7 +12,6 @@ import BookDetailDialog from './BookDetailDialog';
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function Book({ book }) {
     const [open, setOpen] = React.useState(false);
-    const [success, setSuccess] = React.useState(false);
     const context = useShoppingCart();
 
     const addBookToShoppingCart = () => {
@@ -21,6 +20,7 @@ function Book({ book }) {
             const newItems = context.items.concat([book]);
             context.setItems(newItems);
         }
+        handleClose();
     }
     const setModalState = () => {
         setOpen(true);
