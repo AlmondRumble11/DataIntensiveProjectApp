@@ -197,7 +197,7 @@ BEGIN
 		INSERT INTO Country ([Name]) VALUES ('Sweden')
 		INSERT INTO Country ([Name]) VALUES ('Norway')
 
-		INSERT INTO [Language] ([Name], CountryId) VALUES ('Finish', @countryId )
+		INSERT INTO [Language] ([Name], CountryId) VALUES ('Finnish', @countryId )
 		INSERT INTO [Language] ([Name], CountryId) VALUES ('Swedish', @countryId )
 		INSERT INTO [Language] ([Name], CountryId) VALUES ('Norwegian', @countryId )
 		INSERT INTO [Language] ([Name], CountryId) VALUES ('English', @countryId )
