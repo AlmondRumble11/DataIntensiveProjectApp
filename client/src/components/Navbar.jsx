@@ -223,7 +223,7 @@ const ResponsiveAppBar = () => {
                             {t('Checkout')}
                         </MenuItem>}
                         {
-                            ["EN", "SWE", "NO", "FI"].map(lang => {
+                            ["EN", "SE", "NO", "FI"].map(lang => {
                                 return (
                                     <Button key={lang} sx={{ color: context.language === lang ? "red" : "white" }} onClick={() => { handleLanguageChange(lang) }}>
                                         {lang}
