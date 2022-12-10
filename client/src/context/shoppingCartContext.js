@@ -1,5 +1,7 @@
 import React, { useState, useContext } from 'react';
 
+const storageKey = 'shoppingCart';
+
 const ShoppingCartContext = React.createContext({
     items: [],
     setItems: () => { }
@@ -7,15 +9,27 @@ const ShoppingCartContext = React.createContext({
 
 export function ShoppingCartProvider(props) {
     const setItems = (items) => {
-        setState({ ...state, items: items });
+        const newState = { ...state, items: items };
+
+        sessionStorage.setItem(storageKey, JSON.stringify(items));
+        setState(newState);
     }
 
-    const initialState = {
-        items: [],
-        setItems: setItems,
-    };
 
-    const [state, setState] = useState(initialState);
+    function getStoredItems() {
+        const storedItems = sessionStorage.getItem(storageKey);
+        if (storedItems) {
+            return JSON.parse(storedItems);
+        }
+
+        return [];
+    }
+
+
+    const [state, setState] = useState({
+        items: getStoredItems(),
+        setItems: setItems,
+    });
 
 
     return (
