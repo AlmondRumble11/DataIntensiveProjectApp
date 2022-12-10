@@ -9,6 +9,7 @@ export default function Checkout() {
 
     const { t } = useTranslation(['i18n']);
     const shoppingCart = useShoppingCart();
+
     const books = shoppingCart.items ?? [];
 
     const removeItem = (bookIdToRemove) => {
@@ -21,7 +22,7 @@ export default function Checkout() {
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('Checkout')}</h1>
             </Box>
-            {books.map((book) => (
+            {books?.map((book) => (
                 <ShoppingCartItem key={book.Id} book={book} removeItem={removeItem} />
             ))}
             {!books?.length > 0 && <div>{t('EmptyCart')}</div>}
@@ -37,7 +38,7 @@ const ShoppingCartItem = ({ book, removeItem }) => {
     return (
         <Box sx={{ border: 0, width: '60%', margin: 'auto', mb: 1.5 }}>
             <Card variant="outlined">
-                <CardContent sx={{ borderRadius: 2, border: '1.5px solid black'}}>
+                <CardContent sx={{ borderRadius: 2, border: '1.5px solid black' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
 
                         <Typography align='left' variant="h4" component="div">

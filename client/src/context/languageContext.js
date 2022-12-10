@@ -1,22 +1,35 @@
 import React, { useState, useContext } from 'react';
 
+const storageKey = 'language';
+const defaultLanguage = "EN";
 
 const LanguageContext = React.createContext({
-    language: 'EN',
+    language: defaultLanguage,
     setLanguage: () => { }
 });
 
 export function LanguageContextProvider(props) {
     const setLanguage = (language) => {
-        setState({ ...state, language: language });
+        const newState = { ...state, language: language };
+
+        sessionStorage.setItem(storageKey, JSON.stringify(language));
+        setState(newState);
     }
 
-    const initialState = {
-        language: 'EN',
-        setLanguage: setLanguage,
-    };
+    function getStoredLanguage() {
+        const existingState = sessionStorage.getItem(storageKey);
+        if (existingState) {
+            return JSON.parse(existingState);
+        }
 
-    const [state, setState] = useState(initialState);
+        return defaultLanguage;
+    }
+
+
+    const [state, setState] = useState({
+        language: getStoredLanguage(),
+        setLanguage: setLanguage,
+    });
 
     return (
         <LanguageContext.Provider value={state}>
