@@ -26,26 +26,18 @@ CREATE DATABASE DataIntensiveSweden
 GO
 CREATE DATABASE DataIntensiveNorway
 GO
--- Maybe here?
-DROP LOGIN  AdminUser;
-GO
-DROP USER IF EXISTS AdminUser;
-GO
-CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
-GO
-CREATE USER AdminUser FOR LOGIN AdminUser;  
-GO
-EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
-GO
+---- Maybe here?
+--DROP LOGIN  AdminUser;
+--GO
+--DROP USER IF EXISTS AdminUser;
+--GO
+--CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
+--GO
+--CREATE USER AdminUser FOR LOGIN AdminUser;  
+--GO
+--EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
+--GO
 
-
-
-/*
-
-	* Initialize the dummy PDF file for the books
-	* Initialize countries for the loop
-
-*/
 
 DECLARE @countryId INT 
 SET @countryId=0
@@ -75,11 +67,11 @@ BEGIN
 
 
 	-- Create AdminUser for each of the databases
-	DROP LOGIN  AdminUser;
-	DROP USER IF EXISTS AdminUser;
-	CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
-	CREATE USER AdminUser FOR LOGIN AdminUser;  
-	GRANT CONNECT TO AdminUser
+	--DROP LOGIN  AdminUser;
+	--DROP USER IF EXISTS AdminUser;
+	--CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
+	--CREATE USER AdminUser FOR LOGIN AdminUser;  
+	--GRANT CONNECT TO AdminUser
 
     -- Create all tables
 	CREATE TABLE Country(
@@ -159,34 +151,35 @@ BEGIN
 		CustomerId int FOREIGN KEY REFERENCES Customer(Id) ON DELETE CASCADE,
 		OrderId int FOREIGN KEY REFERENCES [Order](Id),
 		BookId int FOREIGN KEY REFERENCES Book(Id),
+		OriginalBookPrice float NULL,
 		CountryId int FOREIGN KEY REFERENCES Country(Id)
 	)
 
-	-- Read permissions
-	GRANT SELECT ON "dbo"."Country" TO AdminUser
-	GRANT SELECT ON "dbo"."Publisher" TO AdminUser
-	GRANT SELECT ON "dbo"."Author" TO AdminUser
-	GRANT SELECT ON "dbo"."Customer" TO AdminUser
-	GRANT SELECT ON "dbo"."Language" TO AdminUser
-	GRANT SELECT ON "dbo"."Genre" TO AdminUser
-	GRANT SELECT ON "dbo"."Book" TO AdminUser
-	GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
-	GRANT SELECT ON "dbo"."Order" TO AdminUser
-	GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
+	------ Read permissions
+	--GRANT SELECT ON "dbo"."Country" TO AdminUser
+	--GRANT SELECT ON "dbo"."Publisher" TO AdminUser
+	--GRANT SELECT ON "dbo"."Author" TO AdminUser
+	--GRANT SELECT ON "dbo"."Customer" TO AdminUser
+	--GRANT SELECT ON "dbo"."Language" TO AdminUser
+	--GRANT SELECT ON "dbo"."Genre" TO AdminUser
+	--GRANT SELECT ON "dbo"."Book" TO AdminUser
+	--GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
+	--GRANT SELECT ON "dbo"."Order" TO AdminUser
+	--GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
 
-	-- Write permissions
-	GRANT INSERT ON "dbo"."Customer" TO AdminUser
-	GRANT INSERT ON "dbo"."Order" TO AdminUser
-	GRANT INSERT ON "dbo"."OrderItem" TO AdminUser
-	GRANT INSERT ON "dbo"."Book" TO AdminUser
-	GRANT INSERT ON "dbo"."BookDetail" TO AdminUser
-	GRANT INSERT ON "dbo"."Language" TO AdminUser
-	GRANT INSERT ON "dbo"."Genre" TO AdminUser
-	GRANT INSERT ON "dbo"."Publisher" TO AdminUser
-	GRANT INSERT ON "dbo"."Author" TO AdminUser
+	---- Write permissions
+	--GRANT INSERT ON "dbo"."Customer" TO AdminUser
+	--GRANT INSERT ON "dbo"."Order" TO AdminUser
+	--GRANT INSERT ON "dbo"."OrderItem" TO AdminUser
+	--GRANT INSERT ON "dbo"."Book" TO AdminUser
+	--GRANT INSERT ON "dbo"."BookDetail" TO AdminUser
+	--GRANT INSERT ON "dbo"."Language" TO AdminUser
+	--GRANT INSERT ON "dbo"."Genre" TO AdminUser
+	--GRANT INSERT ON "dbo"."Publisher" TO AdminUser
+	--GRANT INSERT ON "dbo"."Author" TO AdminUser
 
-	--Update permissions
-	GRANT UPDATE ON "dbo"."Customer" TO AdminUser
+	----Update permissions
+	--GRANT UPDATE ON "dbo"."Customer" TO AdminUser
 
 
 	-- Fille the tables only if database that is in use is the Global database 
@@ -1083,31 +1076,31 @@ DECLARE @countryId INT
 SET @countryId = 1
 INSERT INTO DataIntensiveFinland.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveFinland.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
-INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 2, @countryId, 29.99)
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 3, @countryId, 19.99)
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 4, @countryId, 49.99)
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveFinland.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 5, @countryId, 9.99)
 
 
 SET @countryId = @countryId  + 1
 INSERT INTO DataIntensiveSweden.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveSweden.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
-INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 2, @countryId, 29.99)
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 3, @countryId, 19.99)
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 4, @countryId, 49.99)
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveSweden.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 5, @countryId, 9.99)
 
 
 SET @countryId  = @countryId  + 1
 INSERT INTO DataIntensiveNorway.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (1, 159.96, GETDATE(), @countryId )
 INSERT INTO DataIntensiveNorway.[dbo].[Order] (CustomerId, Total, OrderDate, CountryId) VALUES (2, 69.98, GETDATE(), @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 1, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 2, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 3, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (1, 1, 4, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 1, @countryId )
-INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId) VALUES (2, 2, 5, @countryId )
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 2, @countryId, 29.99)
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 3, @countryId, 19.99)
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (1, 1, 4, @countryId, 49.99)
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 1, @countryId, 59.99)
+INSERT INTO DataIntensiveNorway.[dbo].OrderItem (OrderId, CustomerId, BookId, CountryId, OriginalBookPrice) VALUES (2, 2, 5, @countryId, 9.99)

@@ -1,7 +1,6 @@
-import { Button, Dialog, DialogActions, DialogContent} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, Typography } from "@mui/material";
 import React from 'react'
 import Box from '@mui/material/Box'
-import { Typography  } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import CloseIcon from '@mui/icons-material/Close';

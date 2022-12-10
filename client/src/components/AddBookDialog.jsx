@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function AddBookDialog(props) {
     const { t } = useTranslation(['i18n']);   
-    const { onClose, open, setSuccessAddBooks, setErrorAddBooks } = props;
+    const { onClose, open, handleAddedBookResponse } = props;
     const initialState = {
         title: null,
         authorFirstname: null,
@@ -40,15 +40,8 @@ export default function AddBookDialog(props) {
             mode: 'cors'
         }).then(res => {
             res.json().then(data => {
-                if(data.status){
-                    setSuccessAddBooks(true);
-                }else if(!data.status){
-                    setErrorAddBooks(true);
-                }   
+                handleAddedBookResponse(data);
             });
-            
-           
-            
         });
         handleClose();
     }
