@@ -7,7 +7,7 @@ const configs = [
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: "DataIntensiveFinland",
-            server: "localhost",
+            server: process.env.DB_SERVER,
             options: {
                 trustServerCertificate: true,
             }
@@ -19,7 +19,7 @@ const configs = [
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: "DataIntensiveSweden",
-            server: "localhost",
+            server: process.env.DB_SERVER,
             options: {
                 trustServerCertificate: true,
             }
@@ -31,7 +31,7 @@ const configs = [
             user: process.env.DB_USER,
             password: process.env.DB_PASSWORD,
             database: "DataIntensiveNorway",
-            server: "localhost",
+            server: process.env.DB_SERVER,
             options: {
                 trustServerCertificate: true,
             }
