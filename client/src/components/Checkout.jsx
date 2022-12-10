@@ -37,7 +37,7 @@ const ShoppingCartItem = ({ book, removeItem }) => {
     return (
         <Box sx={{ border: 0, width: '60%', margin: 'auto', mb: 1.5 }}>
             <Card variant="outlined">
-                <CardContent sx={{ borderRadius: 2, border: '1.5px solid black', background: 'lightgray' }}>
+                <CardContent sx={{ borderRadius: 2, border: '1.5px solid black'}}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
 
                         <Typography align='left' variant="h4" component="div">
