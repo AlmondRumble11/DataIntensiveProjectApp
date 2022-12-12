@@ -28,7 +28,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api/customer', customerRouter);
 app.use('/book', bookRouter);
-app.use('/transaction', transactionRouter);
+app.use('/api/transaction', transactionRouter);
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
