@@ -18,9 +18,14 @@ export default function Checkout() {
         title: "",
         severity: ""});
     const [checkoutComplete, setCheckoutComplete] = useState(false);
+    const [checkoutError, setCheckoutError] = useState(false);
 
     const handleCheckoutComplete = (value) => {
         setCheckoutComplete(value);
+    }
+
+    const handleCheckoutError = (value) => {
+        setCheckoutError(value);
     }
 
     const removeItem = (bookIdToRemove) => {
@@ -44,14 +49,34 @@ export default function Checkout() {
                         status: true,
                         title: "Success",
                         severity: "success"});
+                    handleCheckoutError(false);
                     handleCheckoutComplete(true);
+                    shoppingCart.setItems([]);
                 }).catch(err => {
                     return Promise.resolve({res: res});
                 })
-            }else if(res.status !== 201){
+            }else if(res.status === 403){
                 res.json().then(data => {
+                    setAlertValues({
+                        msg: `${data.message}: ${data.books.map((book) => ' ' + book.Title)}`,
+                        status: false,
+                        title: "Error",
+                        severity: "error"});
+                    handleCheckoutError(true);
                     handleCheckoutComplete(false);
                 })
+            }
+            else if(res.status !== 201){
+                res.json().then(data => {
+                    setAlertValues({
+                        msg: data.message,
+                        status: false,
+                        title: "Error",
+                        severity: "error"});
+                        handleCheckoutError(true);
+                        handleCheckoutComplete(false);
+                })
+                
             }
             else{
                 return res.json().catch(err => {
@@ -62,7 +87,7 @@ export default function Checkout() {
             }
         })
 
-        shoppingCart.setItems([]);
+        
     }
 
     const canCheckout = books?.length > 0;
@@ -70,6 +95,7 @@ export default function Checkout() {
     return (
         <div>
             {checkoutComplete &&  <AlertComponent response={alertValues} handleClose={handleCheckoutComplete}/>}
+            {checkoutError &&  <AlertComponent response={alertValues} handleClose={handleCheckoutError}/>}
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('Checkout')}</h1>
             </Box>

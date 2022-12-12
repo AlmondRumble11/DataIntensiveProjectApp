@@ -105,7 +105,51 @@ async function createOrderItem(req, orderId, bookId, countryId){
     
 }
 
+async function isUserBoughtBook (req, res) {
+
+    const query = `
+    select
+    O.Id as OrderId,
+    OI.Id as OrderItemId,
+    B.Id as BookId, B.Title
+    from [Order] as O
+    inner join OrderItem as OI on O.Id = OI.OrderId
+    inner join Book as B on OI.BookId = B.Id
+    where O.CustomerId = ${req.user.id}
+  `;
+  
+    const ownedBooks = await sqlQuery(query, req.headers.countrycode);
+
+    let booksAlreadyOwned = [];
+
+    if (ownedBooks === null) {
+        return res.status(500).send({ message: "Internal error." });
+    }
+
+    if (!ownedBooks || ownedBooks.length <= 0) {
+        return booksAlreadyOwned;
+    }else {
+        for (let i = 0; i < req.body.shoppingBasket.length; i++) {
+            let bookIdInBasket = req.body.shoppingBasket[i].Id
+            for (let x = 0; x < ownedBooks.length; x++) {
+                let ownedBookId = ownedBooks[x].BookId
+                if (bookIdInBasket == ownedBookId) {
+                    booksAlreadyOwned.push(ownedBooks[x])
+                }
+            }
+        }
+        return booksAlreadyOwned
+    }
+
+}
+
 router.post('/checkout', authenticateToken, async(req, res, next) => {
+
+    const booksAlreadyOwned = await isUserBoughtBook(req, res)
+
+    if (booksAlreadyOwned.length > 0){
+        return res.status(403).send({message: "Already own these books", books: booksAlreadyOwned})
+    }
 
     const countryId = await getCountryId(req, res)
     const createdOrder = await createOrder(req, countryId, res)
