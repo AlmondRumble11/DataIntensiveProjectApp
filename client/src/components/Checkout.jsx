@@ -3,14 +3,25 @@ import React from 'react';
 import { useShoppingCart } from '../context/shoppingCartContext';
 import { Box, Card, Typography, CardContent, Button, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import AlertComponent from './AlertComponent';
+import { useState } from 'react';
 
 
 export default function Checkout() {
 
     const { t } = useTranslation(['i18n']);
     const shoppingCart = useShoppingCart();
-
     const books = shoppingCart.items ?? [];
+    const [alertValues, setAlertValues] = useState({
+        msg: "",
+        status: true,
+        title: "",
+        severity: ""});
+    const [checkoutComplete, setCheckoutComplete] = useState(false);
+
+    const handleCheckoutComplete = (value) => {
+        setCheckoutComplete(value);
+    }
 
     const removeItem = (bookIdToRemove) => {
         const newItems = shoppingCart.items.filter(item => item.Id !== bookIdToRemove);
@@ -28,14 +39,18 @@ export default function Checkout() {
         }).then(res => {
             if(res.ok){
                 return res.json().then(data => {
-                    console.log(data)
+                    setAlertValues({
+                        msg: data.message,
+                        status: true,
+                        title: "Success",
+                        severity: "success"});
+                    handleCheckoutComplete(true);
                 }).catch(err => {
                     return Promise.resolve({res: res});
                 })
             }else if(res.status !== 201){
                 res.json().then(data => {
-                    // setErr(data.message)
-                    console.log(data.message);
+                    handleCheckoutComplete(false);
                 })
             }
             else{
@@ -54,6 +69,7 @@ export default function Checkout() {
 
     return (
         <div>
+            {checkoutComplete &&  <AlertComponent response={alertValues} handleClose={handleCheckoutComplete}/>}
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('Checkout')}</h1>
             </Box>
