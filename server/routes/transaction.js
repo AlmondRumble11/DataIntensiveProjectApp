@@ -148,7 +148,7 @@ router.post('/checkout', authenticateToken, async(req, res, next) => {
     const booksAlreadyOwned = await isUserBoughtBook(req, res)
 
     if (booksAlreadyOwned.length > 0){
-        return res.status(403).send({message: "Already own these books", books: booksAlreadyOwned})
+        return res.status(409).send({message: "You already own these books", books: booksAlreadyOwned})
     }
 
     const countryId = await getCountryId(req, res)

@@ -45,7 +45,7 @@ export default function Checkout() {
             if(res.ok){
                 return res.json().then(data => {
                     setAlertValues({
-                        msg: data.message,
+                        msg: `${data.message}. Books were added to your inventory.`,
                         status: true,
                         title: "Success",
                         severity: "success"});
@@ -55,15 +55,25 @@ export default function Checkout() {
                 }).catch(err => {
                     return Promise.resolve({res: res});
                 })
+            }else if(res.status === 409){
+                res.json().then(data => {
+                    setAlertValues({
+                        msg: `${data.message}: ${data.books.map((book) => ' ' + book.Title)}. Please remove them and try again.`,
+                        status: false,
+                        title: "Oops...",
+                        severity: "warning"});
+                    handleCheckoutError(true);
+                    handleCheckoutComplete(false);
+                })
             }else if(res.status === 403){
                 res.json().then(data => {
                     setAlertValues({
-                        msg: `${data.message}: ${data.books.map((book) => ' ' + book.Title)}`,
+                        msg: `${data.message}. Please login to purchase books`,
                         status: false,
                         title: "Error",
                         severity: "error"});
-                    handleCheckoutError(true);
-                    handleCheckoutComplete(false);
+                        handleCheckoutError(true);
+                        handleCheckoutComplete(false);
                 })
             }
             else if(res.status !== 201){
@@ -76,7 +86,6 @@ export default function Checkout() {
                         handleCheckoutError(true);
                         handleCheckoutComplete(false);
                 })
-                
             }
             else{
                 return res.json().catch(err => {
@@ -110,7 +119,7 @@ export default function Checkout() {
             <Box sx={{ border: 0, width: '60%', margin: 'auto', padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <p>
-                        Yhteensä: {books?.reduce((totalPrice, book) => totalPrice + book.Price, 0)}€
+                        Total: {books?.reduce((totalPrice, book) => totalPrice + book.Price, 0).toFixed(2)}€
                     </p>
                     <div style={{ margin: 'auto 0' }}>
                         <Button disabled={!canCheckout} onClick={() => checkout()} variant="contained">{t('Checkout')}</Button>
