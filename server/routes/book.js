@@ -365,7 +365,7 @@ router.post("/addbook", authenticateToken, async function(req, res) {
             GETDATE(),
             '${formValues["description"]}',
             '${bookDetailId}',
-            'insert vat'
+            'insert vat' //TODO
         )`;
 
         await sqlInsert(bookQuery, req.headers.countrycode);
