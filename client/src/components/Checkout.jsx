@@ -18,8 +18,34 @@ export default function Checkout() {
     }
 
     const checkout = () => {
+        let jwt = sessionStorage.getItem('token');
 
-        // TODO transaction
+        fetch('http://localhost:3001/api/transaction/checkout', {
+            method: 'POST',
+            headers: {'Content-type': 'application/json', 'countrycode': sessionStorage.getItem('countryCode'), 'Authorization': `Bearer ${jwt}`},
+            body: JSON.stringify({shoppingBasket: shoppingCart.items}),
+            mode: 'cors'
+        }).then(res => {
+            if(res.ok){
+                return res.json().then(data => {
+                    console.log(data)
+                }).catch(err => {
+                    return Promise.resolve({res: res});
+                })
+            }else if(res.status !== 201){
+                res.json().then(data => {
+                    // setErr(data.message)
+                    console.log(data.message);
+                })
+            }
+            else{
+                return res.json().catch(err => {
+                    throw new Error(res.statusText);
+                }).then(data => {
+                    throw new Error(data.error.message);
+                })
+            }
+        })
 
         shoppingCart.setItems([]);
     }
