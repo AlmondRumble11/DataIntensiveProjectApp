@@ -10,9 +10,9 @@ import { useShoppingCart } from '../context/shoppingCartContext';
 import BookDetailDialog from './BookDetailDialog';
 //Displays single book as a card
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
-function Book({ book }) {
+function Book(props) {
+    const { book, handleAddedBook} = props;
     const [open, setOpen] = React.useState(false);
-    const [success, setSuccess] = React.useState(false);
     const context = useShoppingCart();
 
     const addBookToShoppingCart = () => {
@@ -21,6 +21,8 @@ function Book({ book }) {
             const newItems = context.items.concat([book]);
             context.setItems(newItems);
         }
+        handleClose();
+        handleAddedBook(true);
     }
     const setModalState = () => {
         setOpen(true);

@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import UserDetails from './UserDetails'
 import OwnedBook from './OwnedBook'
-import { Typography, Alert, AlertTitle, Button } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AddBookDialog from './AddBookDialog';
+import AlertComponent from './AlertComponent';
 
 export default function Profile() {
+    const [addedBookResponse, setAddedBookResponse] = useState(null);
     const [user, setUser] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [open, setOpen] = React.useState(false);
-    const [successAddBooks, setSuccessAddBooks] = useState(false);
-    const [errorAddBooks, setErrorAddBooks] = useState(false);
     const [books, setBooks] = useState([]);
     const { t } = useTranslation(['i18n']);
 
@@ -91,6 +91,10 @@ export default function Profile() {
         })
     }
 
+    const handleAddedBookResponse = (data) =>{
+        setAddedBookResponse(data);
+    }
+
     const setModalState = () => {
         setOpen(true);
     };
@@ -108,28 +112,17 @@ export default function Profile() {
             </div>
         )
     }
-
+    
     return (
         <div>
             <Box  display="flex" justifyContent="center">
-            {errorAddBooks && 
-            <Alert severity="error">
-                <AlertTitle>{t("Error")}</AlertTitle>
-                {t("ErrorAlert")} — <strong>{t("CheckItOut")}!</strong>
-                <Button onClick={() => setErrorAddBooks(false)}>{t("Close")}</Button>
-            </Alert>}
-            {successAddBooks && 
-            <Alert severity="success">
-                <AlertTitle>{t("Success")}</AlertTitle>
-                {t("AddBookSuccess")}
-                <Button onClick={() => setSuccessAddBooks(false)}>{t("Close")}</Button>
-            </Alert>}
+            {addedBookResponse && <AlertComponent response={addedBookResponse} handleClose={handleAddedBookResponse}/>}
             </Box>
             <Box sx={{ border: 0, width: '60%', margin: 'auto' }}>
                 <h1 align='left'>{t('My Profile')}</h1>
             </Box>
             { user[0]?.isAdmin != null && <Button sx={{mb: '0.5rem'}} variant="outlined" onClick={setModalState}>{t("AddNewBook")}</Button>}
-            <AddBookDialog open={open} onClose={handleClose} setSuccessAddBooks={setSuccessAddBooks} setErrorAddBooks={setErrorAddBooks}></AddBookDialog>
+            <AddBookDialog open={open} onClose={handleClose} handleAddedBookResponse={handleAddedBookResponse}></AddBookDialog>
             {[...user].map((user) => (
                 <UserDetails key={user.Id} user={user} />
             ))}
