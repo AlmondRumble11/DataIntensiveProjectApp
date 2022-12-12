@@ -134,8 +134,8 @@ router.get("/download/:id", authenticateToken, async function(req, res) {
     const customerInventory = await sqlQuery(queryCheckCustomerInventory, req.headers.countrycode);
 
     for (let i = 0; i < customerInventory.length; i++) {
-        const orderItem = customerInventory[i];
-        if (orderItem.OrderItemId == bookId) {
+        let orderItem = customerInventory[i];
+        if (orderItem.BookId == bookId) {
 
             const result = await sqlQuery(`
             SELECT
