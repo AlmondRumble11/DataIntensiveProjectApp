@@ -45,7 +45,7 @@ function getResultSearch(res, data) {
 function selectVat(req){
     for (let i = 0; i < countryNameAndVat.length; i++) {
         if(countryNameAndVat[i].countryCode == req.headers.countrycode){
-            return countryNameAndCode[i].countryVat
+            return countryNameAndVat[i].countryVat
         }   
     }
 }

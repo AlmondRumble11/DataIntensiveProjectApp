@@ -3,11 +3,13 @@ import { Box } from '@mui/system'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router'
 import {useTranslation} from 'react-i18next';
+import { useShoppingCart } from '../context/shoppingCartContext';
 // Source for using geolocation: https://www.youtube.com/watch?v=VK9F8BWrOgY
 
 export const SelectLocation = () => {
 	const { t } = useTranslation(['i18n']);
 	const [isLocationAllowed, setIsLocationAllowed] = useState(true)
+	const shoppingCart = useShoppingCart();
 	const supportedCountries =
 	[
 		{
@@ -61,7 +63,9 @@ export const SelectLocation = () => {
 		}
 	}
 
+	//Clearing shopping cart when changing locations so the books don't get mixed up between countries
 	const findMyCountry = () => {
+		shoppingCart.setItems([]);
 		navigator.geolocation.getCurrentPosition(onSuccess, onError);
 	}
 
