@@ -3,6 +3,21 @@ const { authenticateToken } = require("../config/passport");
 var router = express.Router();
 var { sqlQuery, sqlInsert } = require("../database");
 
+const countryNameAndVat = [
+    {
+        countryCode: 'FI',
+        countryVat: 0.24
+    },
+    {
+        countryCode: 'SWE',
+        countryVat: 0.25
+    },
+    {
+        countryCode: 'NOR',
+        countryVat: 0.25
+    }
+]
+
 function getResult(res, data) {
     if (data === null) {
         return res.status(500).send("Internal error.");
@@ -25,6 +40,14 @@ function getResultSearch(res, data) {
     }
 
     return res.status(200).json(data);
+}
+
+function selectVat(req){
+    for (let i = 0; i < countryNameAndVat.length; i++) {
+        if(countryNameAndVat[i].countryCode == req.headers.countrycode){
+            return countryNameAndVat[i].countryVat
+        }   
+    }
 }
 
 router.get("/all", async function(req, res) {
@@ -338,6 +361,7 @@ router.post("/addbook", authenticateToken, async function(req, res) {
             ) SELECT SCOPE_IDENTITY() AS Id`;
         const insertedBookDetail = await sqlInsert(bookDetailQuery, req.headers.countrycode);
         const bookDetailId = insertedBookDetail.recordset[0].Id;
+        const vat = selectVat(req);
         const bookQuery = `
         INSERT INTO Book (
             PublisherId, 
@@ -365,7 +389,7 @@ router.post("/addbook", authenticateToken, async function(req, res) {
             GETDATE(),
             '${formValues["description"]}',
             '${bookDetailId}',
-            'insert vat'
+            '${vat}'
         )`;
 
         await sqlInsert(bookQuery, req.headers.countrycode);

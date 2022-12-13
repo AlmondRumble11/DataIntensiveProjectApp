@@ -17,6 +17,7 @@ import { useLanguage } from '../context/languageContext';
 import { useTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { useEffect } from 'react';
+import { useShoppingCart } from '../context/shoppingCartContext';
 
 
 
@@ -26,10 +27,9 @@ import { useEffect } from 'react';
 const ResponsiveAppBar = () => {
 
     const context = useLanguage();
-
     let navigate = useNavigate();
-
     const { i18n, t } = useTranslation(["i18n"]);
+    const shoppingCart = useShoppingCart();
 
     useEffect(() => {
         if (localStorage.getItem("i18nextLng")?.length > 2) {
@@ -62,6 +62,7 @@ const ResponsiveAppBar = () => {
     //When user log outs they are redirected to the login page
     const logOut = () => {
         sessionStorage.setItem('token', ''); //Clearing out the token from session storage
+        shoppingCart.setItems([]); //Clears user shopping cart after logging out
         navigate(`/login`, { replace: true })
     };
 

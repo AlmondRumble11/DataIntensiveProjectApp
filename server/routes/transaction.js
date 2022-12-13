@@ -82,17 +82,19 @@ async function createOrder(req, countryId, res){
     }
 }
 
-async function createOrderItem(req, orderId, bookId, countryId){
+async function createOrderItem(req, orderId, bookId, countryId, bookPrice){
     const queryOrderItem = `
         INSERT INTO OrderItem ( 
             CustomerId, 
             OrderId, 
-            BookId, 
+            BookId,
+            OriginalBookPrice, 
             CountryId) 
             VALUES ( 
                 ${req.user.id}, 
                 ${orderId}, 
                 ${bookId}, 
+                ${bookPrice},
                 ${countryId})
     `;
 
@@ -130,11 +132,11 @@ async function isUserBoughtBook (req, res) {
         return booksAlreadyOwned;
     }else {
         for (let i = 0; i < req.body.shoppingBasket.length; i++) {
-            let bookIdInBasket = req.body.shoppingBasket[i].Id
+            let bookIdInBasket = req.body.shoppingBasket[i].Id;
             for (let x = 0; x < ownedBooks.length; x++) {
-                let ownedBookId = ownedBooks[x].BookId
+                let ownedBookId = ownedBooks[x].BookId;
                 if (bookIdInBasket == ownedBookId) {
-                    booksAlreadyOwned.push(ownedBooks[x])
+                    booksAlreadyOwned.push(ownedBooks[x]);
                 }
             }
         }
@@ -145,10 +147,10 @@ async function isUserBoughtBook (req, res) {
 
 router.post('/checkout', authenticateToken, async(req, res, next) => {
 
-    const booksAlreadyOwned = await isUserBoughtBook(req, res)
+    const booksAlreadyOwned = await isUserBoughtBook(req, res);
 
     if (booksAlreadyOwned.length > 0){
-        return res.status(409).send({message: "You already own these books", books: booksAlreadyOwned})
+        return res.status(409).send({message: "You already own these books", books: booksAlreadyOwned});
     }
 
     const countryId = await getCountryId(req, res)
@@ -156,8 +158,10 @@ router.post('/checkout', authenticateToken, async(req, res, next) => {
     const orderId = createdOrder.recordset[0].Id
 
     for (let i = 0; i < req.body.shoppingBasket.length; i++) {
-        let bookId = req.body.shoppingBasket[i].Id
-        let createdOrderItem = createOrderItem(req, orderId, bookId, countryId)
+       
+        let bookId = req.body.shoppingBasket[i].Id;
+        let bookPrice = req.body.shoppingBasket[i].Price;
+        let createdOrderItem = createOrderItem(req, orderId, bookId, countryId, bookPrice);
     }
 
     return res.status(201).send({message: 'Purchase was successful'});
