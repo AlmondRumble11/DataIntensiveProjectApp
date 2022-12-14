@@ -75,6 +75,8 @@ function checkResultProfile(req, res, data) {
     return res.status(200).json(data);
 }
 
+
+
 router.post('/login', async(req, res) => {
 
     const query = `
@@ -88,36 +90,54 @@ router.post('/login', async(req, res) => {
     return checkResultLogin(req, res, result);
 });
 
+
+//Locking this route for a single user is a very suboptimal solution.
+//Locking for a single user will limit the trafic A LOT
+//This should be addressed on the database level.
+let lockRegister = false;
+
 router.post('/register', async(req, res) => {
 
+    if(lockRegister){
+        return res.status(503).json({ message: "Server under load. Please try again." });
+    }
     const query = `
-  select 1
-  from Customer
-  where Customer.Email = '${req.body.email}'`;
+    select 1
+    from Customer
+    where Customer.Email = '${req.body.email}'`;
+
+    //Lock acquired
+    lockRegister = true;
+    console.log('Lock acquired "lockRegister":', lockRegister);
 
     if (checkCustomerBody(req, res) == 1) {
         const resultQuery = await sqlQuery(query, req.headers.countrycode);
+
         if (resultQuery.length < 1) {
 
             const salt = bcrypt.genSaltSync(10);
             const hash = bcrypt.hashSync(req.body.password, salt);
             const insertQuery = `
-      INSERT INTO Customer ( 
-        Firstname, 
-        Lastname, 
-        Email, 
-        [Password], 
-        CreatedDate, 
-        address) 
-      VALUES ( 
-        '${req.body.firstName}',
-        '${req.body.lastName}', 
-        '${req.body.email}',
-        '${hash}', 
-        GETDATE(), 
-        '${req.body.address}')`
+            INSERT INTO Customer ( 
+                Firstname, 
+                Lastname, 
+                Email, 
+                [Password], 
+                CreatedDate, 
+                address) 
+            VALUES ( 
+                '${req.body.firstName}',
+                '${req.body.lastName}', 
+                '${req.body.email}',
+                '${hash}', 
+                GETDATE(), 
+                '${req.body.address}')`
 
             const resultInsert = await sqlInsert(insertQuery, req.headers.countrycode);
+
+            //Lock released
+            lockRegister = false;
+            console.log('Lock released "lockRegister":', lockRegister);
 
             if (resultInsert === null) {
                 return res.status(500).json({ message: "Internal error" });
@@ -125,6 +145,9 @@ router.post('/register', async(req, res) => {
                 return res.status(201).json(resultInsert);
             }
         } else {
+            //Lock released
+            lockRegister = false;
+            console.log('Lock released "lockRegister":', lockRegister);
             return res.status(409).json({ message: "Email already in use" });
         }
     }
