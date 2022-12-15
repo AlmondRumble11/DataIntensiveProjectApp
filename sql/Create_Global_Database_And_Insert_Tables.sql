@@ -26,17 +26,17 @@ CREATE DATABASE DataIntensiveSweden
 GO
 CREATE DATABASE DataIntensiveNorway
 GO
----- Maybe here?
---DROP LOGIN  AdminUser;
---GO
---DROP USER IF EXISTS AdminUser;
---GO
---CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
---GO
---CREATE USER AdminUser FOR LOGIN AdminUser;  
---GO
---EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
---GO
+---- For local testing
+DROP LOGIN  AdminUser;
+GO
+DROP USER IF EXISTS AdminUser;
+GO
+CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
+GO
+CREATE USER AdminUser FOR LOGIN AdminUser;  
+GO
+EXEC master..sp_addsrvrolemember @loginame = N'AdminUser', @rolename = N'sysadmin'
+GO
 
 
 DECLARE @countryId INT 
@@ -67,11 +67,10 @@ BEGIN
 
 
 	-- Create AdminUser for each of the databases
-	--DROP LOGIN  AdminUser;
-	--DROP USER IF EXISTS AdminUser;
-	--CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
-	--CREATE USER AdminUser FOR LOGIN AdminUser;  
-	--GRANT CONNECT TO AdminUser
+
+	DROP USER IF EXISTS AdminUser;
+	CREATE USER AdminUser FOR LOGIN AdminUser;  
+	GRANT CONNECT TO AdminUser
 
     -- Create all tables
 	CREATE TABLE Country(
@@ -156,30 +155,30 @@ BEGIN
 	)
 
 	------ Read permissions
-	--GRANT SELECT ON "dbo"."Country" TO AdminUser
-	--GRANT SELECT ON "dbo"."Publisher" TO AdminUser
-	--GRANT SELECT ON "dbo"."Author" TO AdminUser
-	--GRANT SELECT ON "dbo"."Customer" TO AdminUser
-	--GRANT SELECT ON "dbo"."Language" TO AdminUser
-	--GRANT SELECT ON "dbo"."Genre" TO AdminUser
-	--GRANT SELECT ON "dbo"."Book" TO AdminUser
-	--GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
-	--GRANT SELECT ON "dbo"."Order" TO AdminUser
-	--GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
+	GRANT SELECT ON "dbo"."Country" TO AdminUser
+	GRANT SELECT ON "dbo"."Publisher" TO AdminUser
+	GRANT SELECT ON "dbo"."Author" TO AdminUser
+	GRANT SELECT ON "dbo"."Customer" TO AdminUser
+	GRANT SELECT ON "dbo"."Language" TO AdminUser
+	GRANT SELECT ON "dbo"."Genre" TO AdminUser
+	GRANT SELECT ON "dbo"."Book" TO AdminUser
+	GRANT SELECT ON "dbo"."BookDetail" TO AdminUser
+	GRANT SELECT ON "dbo"."Order" TO AdminUser
+	GRANT SELECT ON "dbo"."OrderItem" TO AdminUser
 
-	---- Write permissions
-	--GRANT INSERT ON "dbo"."Customer" TO AdminUser
-	--GRANT INSERT ON "dbo"."Order" TO AdminUser
-	--GRANT INSERT ON "dbo"."OrderItem" TO AdminUser
-	--GRANT INSERT ON "dbo"."Book" TO AdminUser
-	--GRANT INSERT ON "dbo"."BookDetail" TO AdminUser
-	--GRANT INSERT ON "dbo"."Language" TO AdminUser
-	--GRANT INSERT ON "dbo"."Genre" TO AdminUser
-	--GRANT INSERT ON "dbo"."Publisher" TO AdminUser
-	--GRANT INSERT ON "dbo"."Author" TO AdminUser
+	-- Write permissions
+	GRANT INSERT ON "dbo"."Customer" TO AdminUser
+	GRANT INSERT ON "dbo"."Order" TO AdminUser
+	GRANT INSERT ON "dbo"."OrderItem" TO AdminUser
+	GRANT INSERT ON "dbo"."Book" TO AdminUser
+	GRANT INSERT ON "dbo"."BookDetail" TO AdminUser
+	GRANT INSERT ON "dbo"."Language" TO AdminUser
+	GRANT INSERT ON "dbo"."Genre" TO AdminUser
+	GRANT INSERT ON "dbo"."Publisher" TO AdminUser
+	GRANT INSERT ON "dbo"."Author" TO AdminUser
 
-	----Update permissions
-	--GRANT UPDATE ON "dbo"."Customer" TO AdminUser
+	--Update permissions
+	GRANT UPDATE ON "dbo"."Customer" TO AdminUser
 
 
 	-- Fille the tables only if database that is in use is the Global database 
@@ -344,7 +343,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 
 	WHERE 
@@ -369,7 +367,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		 DataIntensiveFinland.[dbo].Customer.Id = @lastCustomerId
@@ -392,7 +389,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
@@ -558,7 +554,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		--LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 
 	WHERE 
@@ -583,7 +578,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		--LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
@@ -606,7 +600,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
@@ -772,7 +765,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 
 	WHERE 
@@ -797,7 +789,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
@@ -820,7 +811,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-		--LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		DataIntensiveGlobal.[dbo].Customer.Id = @lastCustomerId
@@ -976,8 +966,7 @@ BEGIN
 		Lastname = @Lastname, 
 		Email = @email, 
 		[Password] = @password, 
-		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
+		CreatedDate = @createdDate,  
 		[Address] = @address 
 
 	WHERE 
@@ -995,7 +984,6 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		 DataIntensiveSweden.[dbo].Customer.Id = @lastCustomerId
@@ -1018,13 +1006,10 @@ BEGIN
 		Email = @email, 
 		[Password] = @password, 
 		CreatedDate = @createdDate, 
-	--	LastUpdatedBy = @lastUpdatedBy, 
 		[Address] = @address 
 	WHERE 
 		DataIntensiveNorway.[dbo].Customer.Id = @lastCustomerId
 	END
-
-
 END	
 GO
 

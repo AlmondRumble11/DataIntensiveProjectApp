@@ -8,7 +8,7 @@ export default function AlertComponent(props) {
     return (
         <Box  display="flex" justifyContent="center">
         <Alert severity={response.severity}>
-            <AlertTitle>{t(response.title)}</AlertTitle>
+            <AlertTitle>{response.title}</AlertTitle>
             {response.msg}
             <Button onClick={() => handleClose(null)}>{t("Close")}</Button>
         </Alert>

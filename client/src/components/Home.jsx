@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Book from './Book';
-import { Box, Button, Alert, AlertTitle} from '@mui/material';
+import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from "react-router-dom";
 import AlertComponent from './AlertComponent';
@@ -8,23 +8,18 @@ import AlertComponent from './AlertComponent';
 export default function Home() {
     const { t } = useTranslation(['i18n']);
     const [books, setBooks] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
-    const [alertValues, setAlertValues] = useState({
+    const [alertValues] = useState({
         msg: "Book was added to cart.",
         status: true,
         title: "Success",
         severity: "success"});
     const [bookAdded, setBookAdded] = useState(false);
-    let isCountrySelected = false
+    const [ isCountrySelected, setIsCountrySelected] = useState(false);
     let navigate = useNavigate();
-
-   
-
 
     useEffect(() => {
         if (sessionStorage.getItem('countryCode')) {
-            isCountrySelected = true;
+            setIsCountrySelected(true);
         }
         if (isCountrySelected) {
             getFeaturedBooks();
@@ -39,26 +34,21 @@ export default function Home() {
     }
     
     const getFeaturedBooks = () => {
-        setLoading(true);
-        setError(false);
-
         fetch('http://localhost:3001/book/featured', {
             mode: 'cors',
             headers: {
                 'countrycode': sessionStorage.getItem('countryCode')
             }
         })
-            .then(response => response.json())
-            .then(data => setBooks(data))
-            .catch(error => {
-                setError(error);
-                console.log('error loading books', error);
-            })
-            .finally(() => {
-                setLoading(false);
-            })
+        .then(response => response.json())
+        .then(data => setBooks(data))
+        .catch(error => {
+            console.log('error loading books', error);
+        })
+        .finally(() => {
+            console.log("Loaded");
+        })
     }
-
 
     return (
         <div>

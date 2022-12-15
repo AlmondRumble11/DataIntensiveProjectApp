@@ -64,7 +64,7 @@ export default function AddBookDialog(props) {
             <DialogTitle>{t("AddNewBook")}</DialogTitle>
             <form id="add-book-form" sx={8} onSubmit={submitForm} onChange={handleChange}>
                 <DialogContent>
-                    <AddBookField setInvalid={setInvalid} invalid={invalid} ></AddBookField>
+                    <AddBookField></AddBookField>
                 </DialogContent>
                 <DialogActions>
                     <Button variant='contained' type="submit" id="submit" disabled={invalid}>{t("Submit")}</Button>

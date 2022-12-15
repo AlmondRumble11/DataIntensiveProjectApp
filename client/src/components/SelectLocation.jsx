@@ -65,6 +65,7 @@ export const SelectLocation = () => {
 
 	//Clearing shopping cart when changing locations so the books don't get mixed up between countries
 	const findMyCountry = () => {
+		sessionStorage.setItem('token', ''); 
 		shoppingCart.setItems([]);
 		navigator.geolocation.getCurrentPosition(onSuccess, onError);
 	}
@@ -73,7 +74,6 @@ export const SelectLocation = () => {
 		sessionStorage.setItem('countryCode', element.target.id)
 		navigate(`/`, { replace: true });
 	}
-	
 
   return (
     <Box>

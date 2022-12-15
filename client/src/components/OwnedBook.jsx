@@ -12,7 +12,7 @@ import {useTranslation} from 'react-i18next';
 // Source for text wrapping: https://stackoverflow.com/questions/64315111/material-ui-write-text-in-exactly-2-lines-with-ellipsis
 function OwnedBook({book}) {
 
-    var jwt = sessionStorage.getItem('token');
+    let jwt = sessionStorage.getItem('token');
 
     // Source for downloading a file:  https://stackoverflow.com/questions/50694881/how-to-download-file-in-react-js
     const DownloadBook = () => {
@@ -39,23 +39,23 @@ function OwnedBook({book}) {
     const {t} = useTranslation(['i18n']);
     const card = (
         <React.Fragment>
-          <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
-                    <Typography align='left' variant="h4" component="div">
-                        {book.Title}
-                    </Typography>
-                    <Typography align='left'  color="text.secondary">
-                        {book.FirstName} {book.LastName}
-                    </Typography>
-                    <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
-                        {book.Genre}
-                    </Typography>
-                    <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
-                        {book.Description}
-                    </Typography>
-            <Stack direction="row" justifyContent="end">
-                <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<DownloadIcon />} onClick={DownloadBook}>{t('Download PDF')}</Button>
-            </Stack>
-          </CardContent>   
+            <CardContent sx={{borderRadius: 2, border: '1.5px solid black'}}>
+                <Typography align='left' variant="h4" component="div">
+                    {book.Title}
+                </Typography>
+                <Typography align='left'  color="text.secondary">
+                    {book.FirstName} {book.LastName}
+                </Typography>
+                <Typography align='left' sx={{ mb: 1.5 }} color="text.secondary">
+                    {book.Genre}
+                </Typography>
+                <Typography align='left' variant="body2" sx={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: "3", WebkitBoxOrient: "vertical" }}>
+                    {book.Description}
+                </Typography>
+                <Stack direction="row" justifyContent="end">
+                    <Button sx={{maxHeight: '40px'}} variant="contained" startIcon={<DownloadIcon />} onClick={DownloadBook}>{t('Download PDF')}</Button>
+                </Stack>
+            </CardContent>   
         </React.Fragment>
       );
     

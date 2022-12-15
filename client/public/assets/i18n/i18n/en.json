@@ -11,7 +11,7 @@
     "No books": "No books.",
     "Loading": "Loading...",
     "Firstname": "First name",
-    "Lastname": "Last name",  
+    "Lastname": "Last name",
     "Address": "Address",
     "Email": "Email",
     "Password": "Password",
@@ -25,8 +25,8 @@
     "Remove": "Remove",
     "EmptyCart": "The cart is empty.",
     "SearchBooks": "Search books...",
-    "Search" : "Search",
-    "UseMyLoc" : "Use My Current Location",
+    "Search": "Search",
+    "UseMyLoc": "Use My Current Location",
     "SelectYourLoc": "Select your location",
     "SelectCountry": "Please select which country's shop you want to use!",
     "Author": "Author",
@@ -47,5 +47,5 @@
     "AuthorsFirstname": "Author's first name",
     "AuthorsLastname": "Author's last name",
     "Submit": "Submit",
-    "Cancel": "Cancel"   
+    "Cancel": "Cancel"
 }
