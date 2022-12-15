@@ -14,12 +14,12 @@ export default function Home() {
         title: "Success",
         severity: "success"});
     const [bookAdded, setBookAdded] = useState(false);
-    const [ isCountrySelected, setIsCountrySelected] = useState(false);
+    let isCountrySelected = false;
     let navigate = useNavigate();
 
     useEffect(() => {
         if (sessionStorage.getItem('countryCode')) {
-            setIsCountrySelected(true);
+            isCountrySelected = true;
         }
         if (isCountrySelected) {
             getFeaturedBooks();
