@@ -39,6 +39,10 @@ function signJwt(data) {
     return token;
 }
 
+//Locking this route for a single user is a very suboptimal solution.
+//Locking for a single user will limit the trafic A LOT
+//This should be addressed on the database level.
+let lockRegister = false;
 
 function checkCustomerBody(req, res) {
 
@@ -50,14 +54,19 @@ function checkCustomerBody(req, res) {
         .has().symbols()
 
     if (req.body.firstName == null || req.body.firstName === '') {
+        lockRegister = false;
         return res.status(422).json({ message: "No first name" });
     } else if (req.body.lastName == null || req.body.lastName === '') {
+        lockRegister = false;
         return res.status(422).json({ message: "No lastname" });
     } else if (req.body.address == null || req.body.address === '') {
+        lockRegister = false;
         return res.status(422).json({ message: "No address" });
     } else if (typeof req.body.email !== 'string' || !IsEmail.validate(req.body.email)) {
+        lockRegister = false;
         return res.status(401).json({ message: "Invalid email" });
     } else if (req.body.password == null || !schema.validate(req.body.password)) { //!TODO voi lisää !schema.validate(req.body.passowrd, {list: true}) ni listaa errorit
+        lockRegister = false;
         return res.status(401).json({ message: "Invalid password" });
     }
     return 1;
@@ -91,14 +100,10 @@ router.post('/login', async(req, res) => {
 });
 
 
-//Locking this route for a single user is a very suboptimal solution.
-//Locking for a single user will limit the trafic A LOT
-//This should be addressed on the database level.
-let lockRegister = false;
 
 router.post('/register', async(req, res) => {
 
-    if(lockRegister){
+    if (lockRegister) {
         return res.status(503).json({ message: "Server under load. Please try again." });
     }
     const query = `
@@ -112,7 +117,6 @@ router.post('/register', async(req, res) => {
 
     if (checkCustomerBody(req, res) == 1) {
         const resultQuery = await sqlQuery(query, req.headers.countrycode);
-
         if (resultQuery.length < 1) {
 
             const salt = bcrypt.genSaltSync(10);

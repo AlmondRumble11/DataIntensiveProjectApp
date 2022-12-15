@@ -10,9 +10,8 @@ export default function AllBooks() {
     const [books, setBooks] = useState([]);
     const [searchTerm, setSearchTerm] = useState({'searchTerm': ''});
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
     const { t } = useTranslation(['i18n']);
-    const [alertValues, setAlertValues] = useState({
+    const [alertValues] = useState({
         msg: "Book was added to cart.",
         status: true,
         title: "Success",
@@ -62,7 +61,7 @@ export default function AllBooks() {
                 })
             } else if (res.status !== 201) {
                 res.json().then(data => {
-                    setError(data.message)
+                    console.log(data.message)
                 })
             }
             else {
@@ -80,7 +79,6 @@ export default function AllBooks() {
 
     const getAllBooks = () => {
         setLoading(true);
-        setError(false);
         fetch('http://localhost:3001/book/all', {
             mode: 'cors',
             headers: {
@@ -90,7 +88,6 @@ export default function AllBooks() {
             .then(response => response.json())
             .then(data => setBooks(data))
             .catch(error => {
-                setError(error);
                 console.log('error loading books', error);
             })
             .finally(() => {

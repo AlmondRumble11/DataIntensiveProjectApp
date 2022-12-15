@@ -1,10 +1,9 @@
-var express = require("express");
+const express = require("express");
 const { authenticateToken } = require("../config/passport");
-var router = express.Router();
-var { sqlQuery, sqlInsert } = require("../database");
+const router = express.Router();
+const { sqlQuery, sqlInsert } = require("../database");
 
-const countryNameAndVat = [
-    {
+const countryNameAndVat = [{
         countryCode: 'FI',
         countryVat: 0.24
     },
@@ -42,11 +41,11 @@ function getResultSearch(res, data) {
     return res.status(200).json(data);
 }
 
-function selectVat(req){
+function selectVat(req) {
     for (let i = 0; i < countryNameAndVat.length; i++) {
-        if(countryNameAndVat[i].countryCode == req.headers.countrycode){
+        if (countryNameAndVat[i].countryCode == req.headers.countrycode) {
             return countryNameAndVat[i].countryVat
-        }   
+        }
     }
 }
 

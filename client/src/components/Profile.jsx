@@ -26,7 +26,7 @@ export default function Profile() {
     const getUserProfile = () => {
         setLoading(true);
         setError(false);
-        var jwt = sessionStorage.getItem('token');
+        let jwt = sessionStorage.getItem('token');
 
 
         fetch('http://localhost:3001/api/customer/profile', {

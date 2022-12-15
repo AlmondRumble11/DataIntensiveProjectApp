@@ -1,11 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useShoppingCart } from '../context/shoppingCartContext';
 import { Box, Card, Typography, CardContent, Button, Divider } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import AlertComponent from './AlertComponent';
-import { useState } from 'react';
-
 
 export default function Checkout() {
 

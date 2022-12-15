@@ -11,7 +11,8 @@ const SearchButton = ({clickEvent}) => {
             sx={{ px: 5.5, mt: 1, minWidth: '100px', maxWidth: '100px', minHeight: '40px', maxHeight: '40px'}}  
             size='small' 
             variant="contained">
-            {t("Search")}</Button>
+            {t("Search")}
+        </Button>
     )
 }
 

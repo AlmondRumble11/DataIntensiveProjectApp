@@ -4,9 +4,7 @@ const authenticateToken = require('../config/passport').authenticateToken
 const sqlQuery = require("../database").sqlQuery;
 const sqlInsert = require("../database").sqlInsert;
 
-
-const countryNameAndCode = [
-    {
+const countryNameAndCode = [{
         countryCode: 'FI',
         countryName: 'Finland'
     },
@@ -22,16 +20,14 @@ const countryNameAndCode = [
 
 function selectCountryName(req) {
     for (let i = 0; i < countryNameAndCode.length; i++) {
-        if(countryNameAndCode[i].countryCode == req.headers.countrycode){
+        if (countryNameAndCode[i].countryCode == req.headers.countrycode) {
             return countryNameAndCode[i].countryName
-        }   
+        }
     }
 }
 
 function calculateTotal(req) {
-
     let totalSum = 0;
-
     for (let i = 0; i < req.body.shoppingBasket.length; i++) {
         totalSum += req.body.shoppingBasket[i].Price;
     }
@@ -39,9 +35,9 @@ function calculateTotal(req) {
     return totalSum;
 }
 
-async function getCountryId(req, res){
+async function getCountryId(req, res) {
     const countryName = selectCountryName(req);
-    
+
     const queryCountryId = `
         SELECT 
         C.Id, C.Name
@@ -52,14 +48,14 @@ async function getCountryId(req, res){
     const dataCountry = await sqlQuery(queryCountryId, req.headers.countrycode);
     if (dataCountry === null) {
         return res.status(500).json({ message: "Internal error" });
-    }else{
+    } else {
         return dataCountry[0].Id
     }
-    
+
 }
 
-async function createOrder(req, countryId, res){
-   
+async function createOrder(req, countryId, res) {
+
     const totalSum = calculateTotal(req);
 
     const queryCreateOrder = `
@@ -73,16 +69,16 @@ async function createOrder(req, countryId, res){
                 ${totalSum}, 
                 GETDATE(), 
                 ${countryId}) SELECT SCOPE_IDENTITY() AS Id`;
-    
+
     const createdOrder = await sqlInsert(queryCreateOrder, req.headers.countrycode)
     if (createdOrder === null) {
         return res.status(500).json({ message: "Internal error" });
-    }else{
+    } else {
         return createdOrder;
     }
 }
 
-async function createOrderItem(req, orderId, bookId, countryId, bookPrice){
+async function createOrderItem(req, orderId, bookId, countryId, bookPrice) {
     const queryOrderItem = `
         INSERT INTO OrderItem ( 
             CustomerId, 
@@ -101,13 +97,13 @@ async function createOrderItem(req, orderId, bookId, countryId, bookPrice){
     const createdOrderItem = await sqlInsert(queryOrderItem, req.headers.countrycode);
     if (createdOrderItem === null) {
         return res.status(500).json({ message: "Internal error" });
-    }else{
+    } else {
         return createdOrderItem;
     }
-    
+
 }
 
-async function isUserBoughtBook (req, res) {
+async function isUserBoughtBook(req, res) {
 
     const query = `
     select
@@ -119,7 +115,7 @@ async function isUserBoughtBook (req, res) {
     inner join Book as B on OI.BookId = B.Id
     where O.CustomerId = ${req.user.id}
   `;
-  
+
     const ownedBooks = await sqlQuery(query, req.headers.countrycode);
 
     let booksAlreadyOwned = [];
@@ -130,7 +126,7 @@ async function isUserBoughtBook (req, res) {
 
     if (!ownedBooks || ownedBooks.length <= 0) {
         return booksAlreadyOwned;
-    }else {
+    } else {
         for (let i = 0; i < req.body.shoppingBasket.length; i++) {
             let bookIdInBasket = req.body.shoppingBasket[i].Id;
             for (let x = 0; x < ownedBooks.length; x++) {
@@ -149,8 +145,8 @@ router.post('/checkout', authenticateToken, async(req, res, next) => {
 
     const booksAlreadyOwned = await isUserBoughtBook(req, res);
 
-    if (booksAlreadyOwned.length > 0){
-        return res.status(409).send({message: "You already own these books", books: booksAlreadyOwned});
+    if (booksAlreadyOwned.length > 0) {
+        return res.status(409).send({ message: "You already own these books", books: booksAlreadyOwned });
     }
 
     const countryId = await getCountryId(req, res)
@@ -158,13 +154,13 @@ router.post('/checkout', authenticateToken, async(req, res, next) => {
     const orderId = createdOrder.recordset[0].Id
 
     for (let i = 0; i < req.body.shoppingBasket.length; i++) {
-       
+
         let bookId = req.body.shoppingBasket[i].Id;
         let bookPrice = req.body.shoppingBasket[i].Price;
-        let createdOrderItem = createOrderItem(req, orderId, bookId, countryId, bookPrice);
+        createOrderItem(req, orderId, bookId, countryId, bookPrice);
     }
 
-    return res.status(201).send({message: 'Purchase was successful'});
-}); 
+    return res.status(201).send({ message: 'Purchase was successful' });
+});
 
 module.exports = router;
