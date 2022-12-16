@@ -69,5 +69,6 @@
     "Pay": "Maksa",
     "Books were added to your inventory.": "Kirjat lisätty kirjoihisi.",
     "Total": "Summa",
-    "Error": "Virhe"   
+    "Error": "Virhe",
+    "Please login to purchase books.": "Kirjaudu ostaaksesi kirjoja."   
 }

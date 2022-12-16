@@ -43,7 +43,7 @@ export default function Checkout() {
             if(res.ok){
                 return res.json().then(data => {
                     setAlertValues({
-                        msg: `${data.message}. Books were added to your inventory."`,
+                        msg: `${data.message}. Books were added to your inventory.`,
                         status: true,
                         title: "Success",
                         severity: "success"});
@@ -66,7 +66,7 @@ export default function Checkout() {
             }else if(res.status === 403){
                 res.json().then(data => {
                     setAlertValues({
-                        msg: `${data.message}. Please login to purchase books`,
+                        msg: `Please login to purchase books.`,
                         status: false,
                         title: "Error",
                         severity: "error"});
