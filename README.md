@@ -77,6 +77,10 @@ npm start
 npm install
 ```
 3. Before running the server add .env file under the server folder (<Root>\DataIntensiveProjectApp\server)
+Picture of how to create new file using Visual Studio Code:
+    
+![image](https://user-images.githubusercontent.com/54431988/208129747-a7c90d36-325f-4624-9531-7beda591b1e4.png)
+    
 .env file should contain following information so the application can access the created database
 ```
 DB_USER=AdminUser
