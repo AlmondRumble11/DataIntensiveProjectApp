@@ -69,5 +69,6 @@
     "Pay": "Pay",
     "Books were added to your inventory.": "Books were added to your inventory.",
     "Total": "Total",
-    "Error": "Error"
+    "Error": "Error",
+    "Please login to purchase books.": "Please login to purchase books."
 }

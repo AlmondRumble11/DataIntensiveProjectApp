@@ -69,5 +69,6 @@
     "Pay": "Betala",
     "Books were added to your inventory.": "Böcker har lagts till i ditt lager.",
     "Total": "Total",
-    "Error": "Fel"   
+    "Error": "Fel",
+    "Please login to purchase books.": "Vänligen logga in för att köpa böcker."        
 }
