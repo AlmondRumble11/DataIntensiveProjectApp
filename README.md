@@ -116,7 +116,12 @@ If following error occurs go to open windows search by pressing Windows key on t
 
 ![image](https://user-images.githubusercontent.com/54431988/208123606-fb43d6ff-a092-45ed-bf0b-d1e34977abab.png)
 
-Type Sql server 2019 configuration manager to open configuration manager and go the SQL Server Network Configuration --> Protocols for MSSQLSERVER and set TCP/IP status to Enabled (example shown below)
+Type 
+```
+Sql server 2019 configuration manager 
+```
+    
+to open configuration manager and go the SQL Server Network Configuration --> Protocols for MSSQLSERVER and set TCP/IP status to Enabled (example shown below)
 
 ![image](https://user-images.githubusercontent.com/54431988/208127894-c9a54433-4bf0-4231-8e3b-2504caf91eef.png)
 
