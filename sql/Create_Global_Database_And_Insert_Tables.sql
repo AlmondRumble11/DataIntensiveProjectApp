@@ -27,11 +27,15 @@ GO
 CREATE DATABASE DataIntensiveNorway
 GO
 ---- For local testing
-DROP LOGIN  AdminUser;
+IF NOT EXISTS 
+    (SELECT name
+     FROM master.sys.server_principals
+     WHERE name = 'AdminUser')
+BEGIN
+    CREATE LOGIN AdminUser WITH PASSWORD = N'admin'
+END
 GO
 DROP USER IF EXISTS AdminUser;
-GO
-CREATE LOGIN AdminUser WITH PASSWORD = 'admin';   
 GO
 CREATE USER AdminUser FOR LOGIN AdminUser;  
 GO
