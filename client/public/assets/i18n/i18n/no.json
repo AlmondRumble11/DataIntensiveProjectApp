@@ -69,5 +69,6 @@
     "Pay": "Betale",
     "Books were added to your inventory.": "Bøker ble lagt til beholdningen din.",
     "Total": "Total",
-    "Error": "Feil"       
+    "Error": "Feil",
+    "Please login to purchase books.": "Vennligst logg inn for å kjøpe bøker."       
 }
