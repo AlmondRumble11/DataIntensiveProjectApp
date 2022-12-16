@@ -49,6 +49,7 @@ git clone https://github.com/AlmondRumble11/DataIntensiveProjectApp.git
 2. Connect to your local server using Windows Authentication (example shown below)
 ![image](https://user-images.githubusercontent.com/54431988/208117396-d28695d5-7443-42fb-af97-377a4f59f472.png)
 3. File --> Open --> File and go to the sql folder of the cloned application (<Root>\DataIntensiveProjectApp\sql) (example shown below)
+    
 ![image](https://user-images.githubusercontent.com/54431988/208122938-c1df754f-04d4-4521-9da7-75ca9793121e.png)
 
 4. Once the file has been opened run the script using F5 or press excute button
