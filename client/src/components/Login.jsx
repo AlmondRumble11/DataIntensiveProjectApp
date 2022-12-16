@@ -72,7 +72,7 @@ function Login() {
 
             {/* Here is shown the error that was received from the server */}
             {err && (<Typography variant='h7' color='red' component='h3' padding={2}>
-                        {err}
+                        {t(err)}
                     </Typography>)}
             
         </div>

@@ -13,15 +13,15 @@ export const SelectLocation = () => {
 	const supportedCountries =
 	[
 		{
-			name: 'Suomi', 
+			name: t('Finland'), 
 			code: 'FI'
 		},
 		{
-			name: 'Sverige', 
+			name: t('Sweden'), 
 			code: 'SWE'
 		},
 		{
-			name: 'Norge', 
+			name: t('Norway'), 
 			code: 'NOR'
 		}
 	];
