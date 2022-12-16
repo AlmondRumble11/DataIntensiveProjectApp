@@ -9,9 +9,9 @@ export default function Home() {
     const { t } = useTranslation(['i18n']);
     const [books, setBooks] = useState([]);
     const [alertValues] = useState({
-        msg: "Book was added to cart.",
+        msg: t("Book was added to cart."),
         status: true,
-        title: "Success",
+        title: t("Success"),
         severity: "success"});
     const [bookAdded, setBookAdded] = useState(false);
     let isCountrySelected = false;

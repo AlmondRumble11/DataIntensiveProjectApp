@@ -12,9 +12,9 @@ export default function AllBooks() {
     const [loading, setLoading] = useState(false);
     const { t } = useTranslation(['i18n']);
     const [alertValues] = useState({
-        msg: "Book was added to cart.",
+        msg: t("Book was added to cart."),
         status: true,
-        title: "Success",
+        title: t("Success"),
         severity: "success"});
     const [bookAdded, setBookAdded] = useState(false);
     

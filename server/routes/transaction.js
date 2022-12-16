@@ -121,7 +121,7 @@ async function isUserBoughtBook(req, res) {
     let booksAlreadyOwned = [];
 
     if (ownedBooks === null) {
-        return res.status(500).send({ message: "Internal error." });
+        return res.status(500).send({ message: "Internal error" });
     }
 
     if (!ownedBooks || ownedBooks.length <= 0) {
@@ -146,7 +146,7 @@ router.post('/checkout', authenticateToken, async(req, res, next) => {
     const booksAlreadyOwned = await isUserBoughtBook(req, res);
 
     if (booksAlreadyOwned.length > 0) {
-        return res.status(409).send({ message: "You already own these books", books: booksAlreadyOwned });
+        return res.status(409).send({ message: "You already own the following books", books: booksAlreadyOwned });
     }
 
     const countryId = await getCountryId(req, res)

@@ -76,7 +76,7 @@ const Register = () => {
         
         {/* If there would be an error with registeration it would be shown here */}
         {err && (<Typography variant='h7' color='red' component='h3' padding={2}>
-                   {err}
+                   {t(err)}
                 </Typography>)}
         
     </div>

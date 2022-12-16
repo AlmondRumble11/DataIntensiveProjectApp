@@ -11,7 +11,7 @@ const authenticateToken = require('../config/passport').authenticateToken;
 
 function checkResultLogin(req, res, data) {
     if (data === null) {
-        return res.status(500).json({ message: "Internal error." });
+        return res.status(500).json({ message: "Internal error" });
     }
     if (!data || data.length <= 0) {
         return res.status(404).json({ message: "User not found." });
@@ -74,7 +74,7 @@ function checkCustomerBody(req, res) {
 
 function checkResultProfile(req, res, data) {
     if (data === null) {
-        return res.status(500).send({ message: "Internal error." });
+        return res.status(500).send({ message: "Internal error" });
     }
 
     if (!data || data.length <= 0) {

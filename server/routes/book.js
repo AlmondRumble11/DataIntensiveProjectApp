@@ -175,6 +175,13 @@ router.get("/download/:id", authenticateToken, async function(req, res) {
 
 });
 
+async function getBookDetail(fileName, countrycode) {
+    return await sqlQuery(`
+    SELECT
+    Id
+    FROM BookDetail
+    WHERE Filename = '${fileName}'`, countrycode);
+}
 
 async function getBook(title, countrycode) {
     return await sqlQuery(`
@@ -254,6 +261,17 @@ router.post("/addbook", authenticateToken, async function(req, res) {
         });
     }
 
+    //Check if bookdetails exist
+    const resultBookDetail = await getBookDetail(file.name, req.headers.countrycode);
+    if (resultBookDetail.length != 0) {
+        return res.status(502).json({
+            msg: "Book exists.",
+            status: false,
+            title: "Error",
+            severity: "error"
+        });
+    }
+    
     if (isNaN(formValues["price"])) {
         return res.status(503).send({
             msg: `Given price ${formValues["price"]} is not a number.`,

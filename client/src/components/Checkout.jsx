@@ -43,7 +43,7 @@ export default function Checkout() {
             if(res.ok){
                 return res.json().then(data => {
                     setAlertValues({
-                        msg: `${data.message}. Books were added to your inventory.`,
+                        msg: `${data.message}. Books were added to your inventory."`,
                         status: true,
                         title: "Success",
                         severity: "success"});
@@ -117,10 +117,10 @@ export default function Checkout() {
             <Box sx={{ border: 0, width: '60%', margin: 'auto', padding: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <p>
-                        Total: {books?.reduce((totalPrice, book) => totalPrice + book.Price, 0).toFixed(2)}€
+                        {t("Total")}: {books?.reduce((totalPrice, book) => totalPrice + book.Price, 0).toFixed(2)}€
                     </p>
                     <div style={{ margin: 'auto 0' }}>
-                        <Button disabled={!canCheckout} onClick={() => checkout()} variant="contained">{t('Checkout')}</Button>
+                        <Button disabled={!canCheckout} onClick={() => checkout()} variant="contained">{t('Pay')}</Button>
                     </div>
                 </div>
             </Box>
