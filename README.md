@@ -112,6 +112,8 @@ Password
 Password1234!
 ```
 
+When new book is added to database the .pdf file is added to server/book_pdf
+
 # Problems
 ## Cannot connect to database
 ConnectionError: Failed to connect to localhost:1433 - Could not connect (sequence)
