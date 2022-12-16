@@ -112,7 +112,7 @@ Password1234!
 ## Cannot connect to database
 ConnectionError: Failed to connect to localhost:1433 - Could not connect (sequence)
 
-If following error occurs go to open windows search by pressing windows key on the key board or press
+If following error occurs go to open windows search by pressing Windows key on the keyboard (picture below) or open the Start menu
 
 ![image](https://user-images.githubusercontent.com/54431988/208123606-fb43d6ff-a092-45ed-bf0b-d1e34977abab.png)
 
