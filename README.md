@@ -12,6 +12,8 @@ In the My Location page the users can choose which country’s website they want
 - SQL server is used for the database 
 ## Project plan
 Link to project plan can be found here: https://drive.google.com/file/d/12JRgGJCR-jTZ7S1MGIQ27ZBT6Usq832l/view?usp=sharing 
+## Application demo video
+Link to demo video: https://youtu.be/iDcYlj8GF2w
 
 
 # Prerequisite
