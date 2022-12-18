@@ -10,6 +10,8 @@ In the My Location page the users can choose which country’s website they want
 - ReactJs is used for the client
 - ExpressJs is used for the server
 - SQL server is used for the database 
+    - 4 databases (Finland, Sweden, Norway and Global)
+    - Each has their own data expect Customer data which is kept the same across all of the databases. Triggers are used for this.
 ## Project plan
 Link to project plan can be found here: https://drive.google.com/file/d/12JRgGJCR-jTZ7S1MGIQ27ZBT6Usq832l/view?usp=sharing 
 ## Application demo video
